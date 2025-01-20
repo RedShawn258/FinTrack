@@ -1,7 +1,4 @@
-# Project Name
-FinTrack - Personal Finance & Budgeting Platform
-
-# Project Description
+# FinTrack - Personal Finance & Budgeting Platform
 
 FinTrack provides individuals with real-time insights into their spending behavior, helping them create and maintain budgets, monitor their monthly expenses, and earn achievements as they progress toward healthier financial habits.
 
