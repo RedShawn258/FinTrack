@@ -15,5 +15,5 @@ By incorporating gamification elements—like levels, badges, and leaderboards, 
 # Group Members
  1) Durga Mahesh Boppani - Frontend
  2) Hemanth Balla - Frontend
- 3) Sri Priya DugaPuti - Backend
+ 3) Sri Priya Dugaputi - Backend
  4) Gopinadh Yadlapalli - Backend
