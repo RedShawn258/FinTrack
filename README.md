@@ -11,3 +11,9 @@ Users can:
  5) Receive alerts when they approach budget thresholds or due dates for recurring bills
 
 By incorporating gamification elements—like levels, badges, and leaderboards, FinTrack not only helps users stay on top of finances but also rewards consistency and progress, making personal finance management more interactive and motivating.
+
+# Group Members
+ 1) Durga Mahesh Boppani - Frontend
+ 2) Hemanth Balla - Frontend
+ 3) Sri Priya DugaPuti - Backend
+ 4) Gopinadh Yadlapalli - Backend
