@@ -1,5 +1,7 @@
 package routes
 
+// the routes file
+
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
