@@ -12,7 +12,8 @@ import (
 
 var DB *gorm.DB
 
-// InitDB connects to MySQL database.
+
+// InitDB connects to MySQL database .
 func InitDB(cfg *config.Config, logger *zap.Logger) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.DBUser, cfg.DBPass, cfg.DBHost, cfg.DBPort, cfg.DBName)
