@@ -10,6 +10,7 @@ import (
 
 	"github.com/RedShawn258/FinTrack/backend/internal/config"
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
+	"github.com/RedShawn258/FinTrack/backend/internal/handlers"
 	"github.com/RedShawn258/FinTrack/backend/internal/models"
 	"github.com/RedShawn258/FinTrack/backend/internal/routes"
 )
@@ -42,17 +43,26 @@ func main() {
 		logger.Fatal("Database initialization failed", zap.Error(err))
 	}
 
-	// Run Auto-Migrate for User model
-	if err := db.DB.AutoMigrate(&models.User{}); err != nil {
-		logger.Fatal("Failed to auto-migrate User model", zap.Error(err))
+	// Auto-Migrate all models (ensure columns are DATE for start_date, end_date, transaction_date)
+	if err := db.DB.AutoMigrate(
+		&models.User{},
+		&models.Budget{},
+		&models.Category{},
+		&models.Transaction{},
+	); err != nil {
+		logger.Fatal("Failed to auto-migrate models", zap.Error(err))
 	}
 	logger.Info("Database migration successful")
 
+	// Recalculate all budget remaining amounts on server startup
+	if err := handlers.RecalculateAllBudgets(logger); err != nil {
+		logger.Error("Failed to recalculate budgets on startup", zap.Error(err))
+	}
+
 	// Set up Gin router
 	r := gin.Default()
-
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // Allow frontend origin
+		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -72,7 +82,6 @@ func main() {
 	// Run the server
 	addr := ":" + cfg.ServerPort
 	logger.Info("Server listening", zap.String("port", cfg.ServerPort))
-
 	if err := r.Run(addr); err != nil {
 		logger.Fatal("Failed to run server", zap.Error(err))
 	}
