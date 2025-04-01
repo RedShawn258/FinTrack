@@ -53,5 +53,10 @@ func SetupRoutes(router *gin.Engine, logger *zap.Logger, jwtSecret string) {
 		protected.GET("/transactions", handlers.GetTransactions)
 		protected.PUT("/transactions/:id", handlers.UpdateTransaction)
 		protected.DELETE("/transactions/:id", handlers.DeleteTransaction)
+
+		// Future feature endpoints (stub implementations)
+		protected.GET("/features/gamification", handlers.GamificationHandler)
+		protected.GET("/features/analytics", handlers.AnalyticsHandler)
+		protected.GET("/features/notifications", handlers.NotificationHandler)
 	}
 }
