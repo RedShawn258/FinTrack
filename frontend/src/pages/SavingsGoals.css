@@ -1,0 +1,108 @@
+/* SavingsGoals.css */
+.savings-guide-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+.savings-guide-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.savings-guide-header h1 {
+  font-size: 2.5rem;
+  color: #2563eb;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.guide-intro {
+  font-size: 1.2rem;
+  color: #4b5563;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.savings-guide-section {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.savings-guide-section h2 {
+  font-size: 1.8rem;
+  color: #1e40af;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.savings-guide-section h3 {
+  font-size: 1.4rem;
+  color: #3b82f6;
+  margin: 25px 0 15px;
+  font-weight: 600;
+}
+
+.savings-guide-section p {
+  margin-bottom: 18px;
+  font-size: 1.05rem;
+}
+
+.savings-guide-section ul,
+.savings-guide-section ol {
+  margin: 20px 0;
+  padding-left: 25px;
+}
+
+.savings-guide-section li {
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+}
+
+.smart-list li {
+  padding-left: 10px;
+  margin-bottom: 18px;
+}
+
+.smart-list strong {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.savings-guide-conclusion {
+  margin-top: 50px;
+}
+
+.final-thought {
+  font-style: italic;
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 30px;
+  color: #1e40af;
+  padding: 20px;
+  border-left: 4px solid #3b82f6;
+  background-color: #f0f7ff;
+}
+
+@media (max-width: 768px) {
+  .savings-guide-header h1 {
+    font-size: 2rem;
+  }
+  
+  .guide-intro {
+    font-size: 1.1rem;
+  }
+  
+  .savings-guide-section h2 {
+    font-size: 1.6rem;
+  }
+  
+  .savings-guide-section h3 {
+    font-size: 1.3rem;
+  }
+}
