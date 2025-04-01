@@ -27,11 +27,11 @@ func LoadConfig() (*Config, error) {
 		Env:        getEnv("ENV", "development"),
 		DBType:     getEnv("DB_TYPE", "mysql"),
 		DBHost:     getEnv("DB_HOST", "localhost"),
-		DBPort:     getEnv("DB_PORT", "3306"), // default MySQL port
+		DBPort:     getEnv("DB_PORT", "3306"),
 		DBUser:     getEnv("DB_USER", "root"),
-		DBPass:     getEnv("DB_PASS", "Mahesh@2000"),
+		DBPass:     getEnv("DB_PASS", "password"),
 		DBName:     getEnv("DB_NAME", "fintrack"),
-		JWTSecret:  getEnv("JWT_SECRET", "super-secret-jwt-key"),
+		JWTSecret:  getEnv("JWT_SECRET", "your-secret-key"),
 		ServerPort: getEnv("PORT", "8080"),
 	}
 
