@@ -40,6 +40,7 @@ body.dashboard-page {
     backdrop-filter: blur(8px);
     width: 100%;
     box-sizing: border-box;
+    margin-bottom: 16px;
 }
 
 .dashboard-header-content {
@@ -63,19 +64,23 @@ body.dashboard-page {
     cursor: pointer;
     background: none;
     border: none;
-    padding: 0;
+    padding: 8px;
     margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.logout-icon-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .logout-icon-button img {
-    width: 30px;
-    height: 30px;
-    opacity: 0.7;
+    width: 24px;
+    height: 24px;
+    opacity: 0.8;
     transition: opacity 0.2s ease;
 }
 
@@ -721,4 +726,13 @@ body.dashboard-page {
 
 .expense-summary div:last-child {
     margin-bottom: 0;
+}
+
+/* Remove loading spinner CSS */
+.loading-overlay {
+    display: none; /* Hide instead of removing entirely to preserve any dependencies */
+}
+
+.loading-spinner {
+    display: none; /* Hide instead of removing entirely to preserve any dependencies */
 }
