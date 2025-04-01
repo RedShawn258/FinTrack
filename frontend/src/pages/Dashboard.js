@@ -1,10 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import {
-  getBudgets,
-  getTransactions,
   createTransaction,
-  getCategories,
   deleteTransaction,
   createCategory,
   createBudget
@@ -15,13 +12,14 @@ import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user, dashboardData, refreshDashboardData, logout } = useContext(AuthContext);
   const token = user?.token;
   const navigate = useNavigate();
 
-  const [budgets, setBudgets] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+  // Use data from context instead of local state
+  const [budgets, setBudgets] = useState(dashboardData.budgets || []);
+  const [categories, setCategories] = useState(dashboardData.categories || []);
+  const [transactions, setTransactions] = useState(dashboardData.transactions || []);
 
   const [newExpense, setNewExpense] = useState({
     description: '',
@@ -56,12 +54,34 @@ const Dashboard = () => {
     expenseData: null
   });
 
-  // ====== Fetch data on mount ======
+  // Update local state when context data changes
   useEffect(() => {
-    if (!token) return;
-    fetchData();
-  }, [token]);
+    setBudgets(dashboardData.budgets || []);
+    setCategories(dashboardData.categories || []);
+    setTransactions(dashboardData.transactions || []);
+  }, [dashboardData]);
 
+  // Refresh dashboard data ONCE when component mounts
+  useEffect(() => {
+    if (token && typeof refreshDashboardData === 'function') {
+      try {
+        // This will run only once when the component mounts
+        const promise = refreshDashboardData();
+        if (promise && typeof promise.catch === 'function') {
+          promise.catch(error => {
+            console.error('Error fetching dashboard data:', error);
+            window.alert('Error fetching data');
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        window.alert('Error fetching data');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]); // Remove refreshDashboardData from dependencies
+
+  // Set dashboard page body class
   useEffect(() => {
     document.body.classList.add('dashboard-page');
     return () => {
@@ -69,28 +89,8 @@ const Dashboard = () => {
     };
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const [budRes, catRes, txRes] = await Promise.all([
-        getBudgets(token),
-        getCategories(token),
-        getTransactions(token)
-      ]);
-      setBudgets(budRes.data.budgets);
-      setCategories(catRes.data.categories);
-      setTransactions(txRes.data.transactions);
-    } catch (error) {
-      console.error('Failed to fetch data', error);
-      alert('Error fetching data');
-    }
-  };
-
-  // ====== Recalc chart whenever transactions change ======
-  useEffect(() => {
-    calculateDistribution(transactions);
-  }, [transactions]);
-
-  const calculateDistribution = (txs) => {
+  // Memoize calculateDistribution to use in dependency arrays
+  const calculateDistribution = useCallback((txs) => {
     const categoryTotals = {};
     txs.forEach((tx) => {
       const catId = tx.CategoryID || 'Uncategorized';
@@ -133,7 +133,12 @@ const Dashboard = () => {
         }
       ]
     });
-  };
+  }, [categories]);
+
+  // Recalculate chart when transactions or categories change
+  useEffect(() => {
+    calculateDistribution(transactions);
+  }, [transactions, calculateDistribution]);
 
   const formatDate = (dateStr) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -142,7 +147,7 @@ const Dashboard = () => {
 
   // ====== Add New Expense ======
   const handleAddExpense = () => {
-    const { description, amount, categoryName, transactionDate } = newExpense;
+    const { description, amount, transactionDate } = newExpense;
     if (!description || !amount || !transactionDate) {
       alert('Please fill all fields (description, amount, date)');
       return;
@@ -196,7 +201,8 @@ const Dashboard = () => {
           transactionDate: ''
         });
 
-        await fetchData();
+        // Use refreshDashboardData instead of fetchData
+        await refreshDashboardData();
 
         if (isNewCategory) {
           setCategoryBudgetPrompt({
@@ -237,13 +243,17 @@ const Dashboard = () => {
     if (confirmed && confirmDialog.expenseId) {
       try {
         await deleteTransaction(token, confirmDialog.expenseId);
-        fetchData();
+        // Use refreshDashboardData instead of fetchData
+        await refreshDashboardData();
       } catch (error) {
         console.error('Failed to delete transaction', error);
-        alert(error.response?.data?.error || 'Failed to delete expense');
+        alert(error.response?.data?.error || 'Failed to delete transaction');
       }
     }
-    setConfirmDialog({ isOpen: false, expenseId: null });
+    setConfirmDialog({
+      isOpen: false,
+      expenseId: null
+    });
   };
 
   // ====== Summaries ======
@@ -265,59 +275,59 @@ const Dashboard = () => {
   const handleAddBudget = async () => {
     const { categoryName, amount, startDate, endDate } = newBudget;
     if (!categoryName || !amount || !startDate || !endDate) {
-      alert('Please fill all budget fields');
+      alert('Please fill all fields (category, amount, start date, end date)');
       return;
     }
-
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) {
-      alert('Budget amount must be a positive number');
-      return;
-    }
-
-    if (new Date(endDate) <= new Date(startDate)) {
-      alert('End date must be after start date');
+      alert('Amount must be a positive number');
       return;
     }
 
     try {
-      let categoryId = null;
-      if (categoryName.trim()) {
-        const existingCat = categories.find(
-          (cat) => cat.Name.toLowerCase() === categoryName.trim().toLowerCase()
-        );
-        if (existingCat) {
-          categoryId = existingCat.ID;
-        } else {
-          const res = await createCategory(token, { name: categoryName.trim() });
-          categoryId = res.data.category.ID;
-          setCategories([...categories, res.data.category]);
-        }
+      let categoryId;
+
+      // Check if this is an existing category
+      const existingCat = categories.find(
+        (cat) => cat.Name.toLowerCase() === categoryName.trim().toLowerCase()
+      );
+
+      if (existingCat) {
+        categoryId = existingCat.ID;
+      } else {
+        // Create new category first
+        const catRes = await createCategory(token, { name: categoryName.trim() });
+        categoryId = catRes.data.category.ID;
       }
 
+      // Create the budget
       await createBudget(token, {
         categoryId,
-        limitAmount: amountNum,
+        amount: amountNum,
         startDate,
         endDate
       });
 
-      alert('Budget set successfully');
-      fetchData();
+      // Reset the form
       setNewBudget({
         categoryName: '',
         amount: '',
         startDate: '',
         endDate: ''
       });
+
+      // Refresh data using context function
+      await refreshDashboardData();
+
+      alert('Budget added successfully');
     } catch (error) {
-      console.error('Failed to set budget', error);
-      alert(error.response?.data?.error || 'Failed to set budget');
+      console.error('Failed to create budget', error);
+      alert(error.response?.data?.error || 'Failed to create budget');
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    logout();
     navigate('/login');
   };
 
@@ -327,7 +337,7 @@ const Dashboard = () => {
         <div className="dashboard-header-content">
           <h2>Total Expenses: ${totalExpenses.toFixed(2)}</h2>
           <button className="logout-icon-button" onClick={handleLogout} title="Logout">
-            <img src="/assets/logout.png" alt="" />
+            <img src="/assets/logout.png" alt="Logout" />
           </button>
         </div>
       </div>
