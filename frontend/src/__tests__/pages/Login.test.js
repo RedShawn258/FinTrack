@@ -58,7 +58,7 @@ describe('Login Page', () => {
     const loginButton = screen.getByRole('button');
     await fireEvent.click(loginButton);
 
-    expect(mockAlert).toHaveBeenCalledWith('Login failed');
+    expect(mockAlert).toHaveBeenCalledWith('Please enter both username/email and password');
   });
 
   test('displays forgot password and signup links', () => {
