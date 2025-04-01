@@ -8,10 +8,16 @@ const ForgotPassword = () => {
     const navigate = useNavigate();
 
     const handleResetPassword = async () => {
+        if (!userData.identifier || !userData.newPassword || !userData.confirmPassword) {
+            alert('Failed to reset password');
+            return;
+        }
+        
         if (userData.newPassword !== userData.confirmPassword) {
             alert('Passwords do not match');
             return;
         }
+
         try {
             await resetPassword(userData);
             alert('Password reset successful');

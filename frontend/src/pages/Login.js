@@ -7,16 +7,28 @@ import AuthForm from '../components/AuthForm';
 const Login = () => {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogin = async () => {
+        if (!identifier || !password) {
+            alert('Please enter both username/email and password');
+            return;
+        }
+
+        setIsLoading(true);
         try {
             const response = await loginUser({ identifier, password });
             login(response.data);
-            navigate('/dashboard'); // Redirect after successful login
+            
+            // This will trigger the data prefetching in AuthContext
+            // Then navigate to dashboard
+            navigate('/dashboard');
         } catch (error) {
             alert(error.response?.data?.error || 'Login failed');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -28,6 +40,7 @@ const Login = () => {
                 { label: "Password", type: "password", value: password, onChange: (e) => setPassword(e.target.value) },
             ]}
             onSubmit={handleLogin}
+            isLoading={isLoading}
             footer={
                 <div>
                     <p><a href="/forgot-password">Forgot Password?</a></p>

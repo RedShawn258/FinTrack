@@ -11,7 +11,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  padding: 0 10%; /* Adjust padding to give space for FinTrack title on the left */
+  padding: 0 10%;
 }
 
 /* Styling the FinTrack title on the left */

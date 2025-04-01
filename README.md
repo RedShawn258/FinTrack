@@ -12,71 +12,99 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 - **Analytics & Insights:** Visual representation of spending patterns.
 - **Gamification Elements:** Earn badges and rewards for savings milestones.
 - **Alerts & Notifications:** Get reminders for bill payments and budget thresholds.
+- **Data Visualization:** Interactive charts and graphs for expense analysis.
+- **Responsive Design:** Optimized for all device sizes.
+- **Error Handling:** Robust validation and error management.
+- **Landing Pages:** Informative landing pages with testimonials and feature highlights.
+- **AWS Infrastructure:** Cloud-based deployment with Infrastructure as Code.
+- **Database Optimization:** Enhanced performance and secure access patterns.
 
 ---
 
-## **Sprint 1 Report**
+## **Sprint 3 Report**
 
 ### **User Stories**
 
 #### **Backend Team**
-##### **Sripriya Dugaputi (Signup, Login, API Integration)**
-1. **Implement Signup API**
-2. **Implement Login API**
-3. **Set up authentication routes**
-4. **Integrate authentication APIs with backend services**
+##### **Sripriya Dugaputi (Database & Gamification)**
+1. **Implement Secure Database Access Patterns (#52)**
+2. **Design Gamification Feature Database Architecture (#53)**
+3. **Optimize AWS RDS Database Performance (#51)**
 
-##### **Gopinadh Yadlapalli (Forgot Password, JWT, Middleware, Database Schema)**
-5. **Implement Forgot Password API**
-6. **Implement password hashing and JWT token integration**
-7. **Set up middleware for authentication & database connection**
+##### **Gopinadh Yadlapalli (Infrastructure & Performance)**
+4. **Implement AWS Infrastructure as Code (#56)**
+5. **Develop Enhanced Database Monitoring System (#54)**
+6. **Conduct Enhanced Load Testing and Performance Optimization (#57)**
 
 #### **Frontend Team**
-##### **Durga Mahesh Boppani (Signup, Forgot Password, Context API for State Management)**
-8. **Implement Signup Page and Integrate with Backend**
-9. **Implement Forgot Password Feature in UI and Connect with Backend**
-10. **Enable Context API for State Management**
+##### **Durga Mahesh Boppani (Landing Page & Integration)**
+7. **Landing Page and Authentication Integration Improvements (#59)**
+8. **End-to-End Testing for User Flows (#60)**
+9. **Refine "Read More" Information Pages (#58)**
 
-##### **Hemanth Balla (Login Page, API Integration, Styling & Routing)**
-11. **Implement Login Page and Integrate with Backend**
-12. **Implement Routing and Navigation for Authentication Pages**
-13. **Style Authentication Pages for Better UX**
+##### **Hemanth Balla (UI Testing & Refinement)**
+10. **Landing Page Component Unit Tests (#62)**
+11. **Information Page Unit Tests (#63)**
+12. **Landing Page Content Refinement (#61)**
 
----
+### **Successfully Completed Issues**
 
-## **Planned Issues for Sprint 1**
-
-1. Backend Authentication APIs (Signup, Login, Forgot Password)
-2. Middleware setup for authentication and database connection
-3. Frontend Authentication Pages (Signup, Login, Forgot Password)
-4. API Integration between frontend and backend
-5. State Management with Context API
-6. UI Styling and Routing Setup
-
----
-
-## **Successfully Completed Issues**
-
-✅ Backend Authentication APIs (Signup, Login, Forgot Password)
-✅ Middleware setup for authentication and database connection
-✅ Frontend Authentication Pages (Signup, Login, Forgot Password)
-✅ API Integration between frontend and backend
-✅ Context API setup for authentication state management
-✅ UI Styling and Routing for authentication pages
+✅ Landing Page Components and Authentication Integration
+✅ Information Pages with "Read More" Sections
+✅ Comprehensive Testing Strategy (Unit Tests and E2E)
+✅ AWS Infrastructure with IaC Principles
+✅ Database Performance Monitoring and Optimization
+✅ Secure Database Access Patterns
+✅ Gamification Feature Architecture
+✅ Load Testing and Performance Optimization
 
 ---
 
-## **Issues That Were Not Completed & Why**
+## **Sprint 2 Report**
 
-🚧 **No major pending issues** – all planned tasks were successfully completed in Sprint 1. Some minor refinements and optimizations will be addressed in Sprint 2.
+### **User Stories**
+
+#### **Backend Team**
+##### **Sripriya Dugaputi (Budget & Categories)**
+1. **Implement Budget management and Category APIs**
+2. **Create Unit Tests for the respective APIs**
+3. **Build Database tables and respective schema**
+
+##### **Gopinadh Yadlapalli (Transaction API & Testing)**
+4. **Implement Transaction API and Develop unit test cases for it**
+5. **Create Unit Tests for User Authentication**
+6. **Implement API routings for the new APIs**
+
+#### **Frontend Team**
+##### **Durga Mahesh Boppani (Dashbaord & UI)**
+7. **Implement Dashboard UI with styling**
+8. **Create Data Visualization Components**
+9. **Write Unit Tests for Dashboard feature**
+
+##### **Hemanth Balla (Testing & API calls)**
+10. **Implement Cypress End-to-End Tests**
+11. **Integrate API calls to the backend server**
+12. **Create Unit Tests for User Authentication**
+
+### **Successfully Completed Issues**
+
+✅ Expense Tracking Implementation
+✅ Budget Management Features
+✅ Data Visualization Components
+✅ Responsive Design Implementation
+✅ Comprehensive Unit Tests
+✅ End-to-End Testing with Cypress
+✅ API Documentation
+✅ Error Handling and Validation
 
 ---
 
-## **Next Steps for Sprint 2**
-- **Develop Landing Page** with interactive UI.
-- **Implement Dashboard & Expense Tracking UI.**
-- **Improve UI Components for a more engaging experience.**
-- **Expand Backend for advanced financial analytics.**
+## **Next Steps for Sprint 4**
+- **Implement User Profile Customization**
+- **Develop Social Sharing Features**
+- **Add Expense Forecasting Capabilities**
+- **Refine Mobile App Experience**
+- **Improve Accessibility Features**
 
 ---
 
@@ -113,9 +141,25 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
    npm start
    ```
 
+### **Running Tests**
+1. Frontend Tests:
+   ```bash
+   npm test
+   ```
+2. Cypress E2E Tests:
+   ```bash
+   npm run cypress:open
+   ```
+3. Backend Tests:
+   ```bash
+   go test ./...
+   ```
+
 ---
 
 ## **Contributors**
 - **Backend Team:** Sripriya Dugaputi, Gopinadh Yadlapalli
 - **Frontend Team:** Durga Mahesh Boppani, Hemanth Balla
+
+
 

@@ -8,10 +8,18 @@ const Signup = () => {
     const navigate = useNavigate();
 
     const handleSignup = async () => {
+        // Check for empty fields
+        if (!userData.username || !userData.email || !userData.password || !userData.confirmPassword) {
+            alert('Signup failed');
+            return;
+        }
+
+        // Check for password match
         if (userData.password !== userData.confirmPassword) {
             alert('Passwords do not match');
             return;
         }
+
         try {
             await registerUser(userData);
             alert('Signup successful');
