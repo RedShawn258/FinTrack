@@ -15,6 +15,48 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 - **Data Visualization:** Interactive charts and graphs for expense analysis.
 - **Responsive Design:** Optimized for all device sizes.
 - **Error Handling:** Robust validation and error management.
+- **Landing Pages:** Informative landing pages with testimonials and feature highlights.
+- **AWS Infrastructure:** Cloud-based deployment with Infrastructure as Code.
+- **Database Optimization:** Enhanced performance and secure access patterns.
+
+---
+
+## **Sprint 3 Report**
+
+### **User Stories**
+
+#### **Backend Team**
+##### **Sripriya Dugaputi (Database & Gamification)**
+1. **Implement Secure Database Access Patterns (#52)**
+2. **Design Gamification Feature Database Architecture (#53)**
+3. **Optimize AWS RDS Database Performance (#51)**
+
+##### **Gopinadh Yadlapalli (Infrastructure & Performance)**
+4. **Implement AWS Infrastructure as Code (#56)**
+5. **Develop Enhanced Database Monitoring System (#54)**
+6. **Conduct Enhanced Load Testing and Performance Optimization (#57)**
+
+#### **Frontend Team**
+##### **Durga Mahesh Boppani (Landing Page & Integration)**
+7. **Landing Page and Authentication Integration Improvements (#59)**
+8. **End-to-End Testing for User Flows (#60)**
+9. **Refine "Read More" Information Pages (#58)**
+
+##### **Hemanth Balla (UI Testing & Refinement)**
+10. **Landing Page Component Unit Tests (#62)**
+11. **Information Page Unit Tests (#63)**
+12. **Landing Page Content Refinement (#61)**
+
+### **Successfully Completed Issues**
+
+✅ Landing Page Components and Authentication Integration
+✅ Information Pages with "Read More" Sections
+✅ Comprehensive Testing Strategy (Unit Tests and E2E)
+✅ AWS Infrastructure with IaC Principles
+✅ Database Performance Monitoring and Optimization
+✅ Secure Database Access Patterns
+✅ Gamification Feature Architecture
+✅ Load Testing and Performance Optimization
 
 ---
 
@@ -57,11 +99,12 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 
 ---
 
-## **Next Steps for Sprint 3**
-- **Implement Gamification Features**
-- **Develop Advanced Analytics**
-- **more Refined UI**
-- **Implement Push Notifications**
+## **Next Steps for Sprint 4**
+- **Implement User Profile Customization**
+- **Develop Social Sharing Features**
+- **Add Expense Forecasting Capabilities**
+- **Refine Mobile App Experience**
+- **Improve Accessibility Features**
 
 ---
 
@@ -117,4 +160,6 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 ## **Contributors**
 - **Backend Team:** Sripriya Dugaputi, Gopinadh Yadlapalli
 - **Frontend Team:** Durga Mahesh Boppani, Hemanth Balla
+
+
 
