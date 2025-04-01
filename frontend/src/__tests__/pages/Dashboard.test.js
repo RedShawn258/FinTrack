@@ -37,9 +37,20 @@ const mockUser = {
 
 const renderDashboard = () => {
   const mockLogout = jest.fn();
+  const mockRefreshDashboardData = jest.fn();
   return render(
     <BrowserRouter>
-      <AuthContext.Provider value={{ user: mockUser, isAuthenticated: true, logout: mockLogout }}>
+      <AuthContext.Provider value={{ 
+        user: mockUser, 
+        isAuthenticated: true, 
+        logout: mockLogout,
+        dashboardData: {
+          budgets: [],
+          categories: [],
+          transactions: []
+        },
+        refreshDashboardData: mockRefreshDashboardData
+      }}>
         <Dashboard />
       </AuthContext.Provider>
     </BrowserRouter>
@@ -62,10 +73,28 @@ describe('Dashboard Component', () => {
   });
 
   test('handles API errors gracefully', async () => {
-    // Mock API error
-    api.getTransactions.mockRejectedValueOnce(new Error('Failed to fetch transactions'));
+    // Mock the refreshDashboardData to throw an error
+    const mockRefreshDashboardData = jest.fn().mockImplementation(() => {
+      return Promise.reject(new Error('Failed to fetch dashboard data'));
+    });
     
-    renderDashboard();
+    render(
+      <BrowserRouter>
+        <AuthContext.Provider value={{ 
+          user: mockUser, 
+          isAuthenticated: true, 
+          logout: jest.fn(),
+          dashboardData: {
+            budgets: [],
+            categories: [],
+            transactions: []
+          },
+          refreshDashboardData: mockRefreshDashboardData
+        }}>
+          <Dashboard />
+        </AuthContext.Provider>
+      </BrowserRouter>
+    );
 
     // Wait for error message
     await waitFor(() => {
