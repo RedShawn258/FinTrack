@@ -1,0 +1,215 @@
+/* BudgetPlanning.css */
+.budget-guide-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  line-height: 1.6;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.budget-guide-header {
+  text-align: left;
+  margin-bottom: 40px;
+  padding: 20px 0;
+}
+
+.budget-guide-header h1 {
+  font-size: 2.5rem;
+  color: #2563eb;
+  margin-bottom: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.guide-intro {
+  font-size: 1.1rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.budget-guide-section {
+  margin-bottom: 40px;
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.budget-guide-section h2 {
+  font-size: 1.8rem;
+  color: #1e40af;
+  margin: 0 0 20px 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.budget-guide-section h3 {
+  font-size: 1.4rem;
+  color: #3b82f6;
+  margin: 25px 0 15px 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.budget-guide-section p {
+  margin: 0 0 18px 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.budget-guide-section ul,
+.budget-guide-section ol {
+  margin: 15px 0;
+  padding-left: 25px;
+}
+
+.budget-guide-section li {
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.budget-guide-section li:last-child {
+  margin-bottom: 0;
+}
+
+.budget-guide-conclusion {
+  margin-top: 40px;
+  padding: 20px 0;
+}
+
+.final-thought {
+  font-style: italic;
+  text-align: center;
+  font-size: 1.2rem;
+  margin: 30px 0;
+  color: #1e40af;
+  padding: 20px;
+  border-left: 4px solid #3b82f6;
+  background-color: #f0f7ff;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  .budget-guide-container {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .budget-guide-header h1 {
+    font-size: 2rem;
+  }
+  
+  .guide-intro {
+    font-size: 1rem;
+  }
+  
+  .budget-guide-section h2 {
+    font-size: 1.6rem;
+  }
+  
+  .budget-guide-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .budget-guide-section p,
+  .budget-guide-section li {
+    font-size: 1rem;
+  }
+}
+
+/* Add styles for better readability */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f7fa;
+}
+
+/* Add styles for better list appearance */
+ul, ol {
+  list-style-position: outside;
+}
+
+ul li {
+  list-style-type: disc;
+}
+
+ol li {
+  list-style-type: decimal;
+}
+
+/* Add styles for better spacing between sections */
+.budget-guide-section + .budget-guide-section {
+  margin-top: 40px;
+}
+
+/* Add styles for better text contrast */
+strong {
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.navbar {
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.how-it-works {
+  margin-top: 80px; /* Ensure space below the navbar */
+  padding: 40px 20px;
+  background-color: #e0f7fa;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  color: #006400;
+  margin-bottom: 20px;
+}
+
+.steps-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.step {
+  margin-bottom: 20px;
+}
+
+.step-text {
+  color: #0047AB;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.step-description {
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.features-section {
+  margin-top: 60px;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+} 
