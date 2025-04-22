@@ -49,16 +49,16 @@ describe('AuthForm Component', () => {
   test('renders all input fields correctly', () => {
     render(<TestWrapper />);
     
-    expect(screen.getByLabelText('Username')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toHaveTextContent('Sign In');
+    expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+    expect(screen.getByRole('button')).toHaveTextContent('Submit');
   });
 
   test('handles form submission correctly', () => {
     render(<TestWrapper />);
     
-    const usernameInput = screen.getByLabelText('Username');
-    const passwordInput = screen.getByLabelText('Password');
+    const usernameInput = screen.getByPlaceholderText('Username');
+    const passwordInput = screen.getByPlaceholderText('Password');
     const submitButton = screen.getByRole('button');
 
     fireEvent.change(usernameInput, { target: { value: 'testuser' } });

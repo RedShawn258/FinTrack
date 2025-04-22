@@ -47,7 +47,5 @@ describe('Navbar Component', () => {
     expect(logoutButton).toBeInTheDocument();
     
     fireEvent.click(logoutButton);
-    // Check that logout function was called
-    // We can't check navigate since it's called inside the logout function
   });
 }); 
