@@ -20,11 +20,25 @@ export const loginUser = async (credentials) => {
 };
 
 export const resetPassword = async (data) => {
-  return await api.post("/auth/reset-password", data);
+  return await api.post("/auth/forgot-password", { email: data.email });
+};
+
+export const resetPasswordWithToken = async (data) => {
+  return await api.post("/auth/reset-password", {
+    token: data.token,
+    newPassword: data.password,
+    confirmPassword: data.password
+  });
 };
 
 export const fetchProfile = async (token) => {
   return await api.get("/profile", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const updateProfile = async (token, profileData) => {
+  return await api.put("/profile", profileData, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -74,7 +88,6 @@ export const deleteCategory = async (token, categoryId) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
-
 
 // ========== Transaction Endpoints ==========
 

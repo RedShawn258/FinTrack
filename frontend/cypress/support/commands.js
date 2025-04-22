@@ -23,3 +23,29 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+// Custom command for login
+Cypress.Commands.add('login', (identifier = 'durgamaheshboppani@gmail.com', password = 'Mahesh@1078') => {
+  // Visit login page
+  cy.visit('/login');
+  
+  // Enter login credentials - updated selectors based on actual DOM
+  cy.get('input[placeholder="Username/Email"]').type(identifier);
+  cy.get('input[placeholder="Password"]').type(password);
+  
+  // Submit login form
+  cy.get('button[type="submit"]').click();
+  
+  // Verify redirection to dashboard
+  cy.url().should('include', '/dashboard');
+});
+
+// Custom command to set authenticated state without UI
+Cypress.Commands.add('loginByAuth', (token = 'test-token', username = 'testuser') => {
+  cy.window().then((win) => {
+    win.localStorage.setItem('user', JSON.stringify({
+      token,
+      username
+    }));
+  });
+});
