@@ -1,11 +1,39 @@
 .auth-layout {
-    height: 100vh;
+    min-height: 100vh;
     width: 100%;
-    background-image: url('/public/assets/sample.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-color: #f3f4f6;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
+}
+
+@media (max-width: 480px) {
+    .auth-layout {
+        background-color: white;
+        padding: 0;
+    }
+    
+    .auth-container {
+        box-shadow: none !important;
+        padding: 2rem 1.5rem !important;
+    }
+}
+
+/* Add a semi-transparent overlay for better readability */
+.auth-layout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+/* Ensure the form container is above the overlay */
+.auth-layout > * {
+    position: relative;
+    z-index: 2;
 } 
