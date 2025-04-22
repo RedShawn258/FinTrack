@@ -3,56 +3,48 @@
 ============================ */
 body.dashboard-page {
     margin: 0;
-    padding: 24px;
+    padding: 0;
     background: #f8fafc !important;
     background-image: none !important;
-    width: 100%;
     min-height: 100vh;
     box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-y: auto;
 }
-/* 
-   Container with max width so content
-   is centered on large desktops 
-*/
+
+/* Main container */
 .dashboard-container {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     max-width: 1600px;
     margin: 0 auto;
-    position: relative;
-    gap: 24px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+/* Dashboard content */
+.dashboard-content {
+    flex: 1;
+    padding: 24px;
 }
 
 /* ============================
-   STICKY HEADER
+   HEADER
 ============================ */
 .dashboard-header {
-    position: sticky;
-    top: 20px;
-    z-index: 100;
     background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding: 16px 24px;
-    backdrop-filter: blur(8px);
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    border-radius: 12px;
 }
 
 .dashboard-header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    gap: 16px;
+    padding: 16px 24px;
+    height: 48px;
 }
 
 .dashboard-header h2 {
-    font-size: 20px;
+    font-size: 16px;
     color: #1e293b;
     font-weight: 600;
     margin: 0;
@@ -64,13 +56,15 @@ body.dashboard-page {
     cursor: pointer;
     background: none;
     border: none;
-    padding: 8px;
+    padding: 4px; /* Further reduced from 6px */
     margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    width: 28px; /* Further reduced from 32px */
+    height: 28px; /* Further reduced from 32px */
+    border-radius: 4px; /* Further reduced from 6px */
 }
 
 .logout-icon-button:hover {
@@ -78,9 +72,9 @@ body.dashboard-page {
 }
 
 .logout-icon-button img {
-    width: 24px;
-    height: 24px;
-    opacity: 0.8;
+    width: 18px; /* Further reduced from 20px */
+    height: 18px; /* Further reduced from 20px */
+    opacity: 0.7;
     transition: opacity 0.2s ease;
 }
 
@@ -88,20 +82,102 @@ body.dashboard-page {
     opacity: 1;
 }
 
+/* Hide all other logout buttons */
+.logout-button,
+button[class*="logout"],
+a[class*="logout"],
+[class*="logout-btn"],
+nav .logout-btn,
+header .logout-btn,
+.nav-buttons .logout-btn,
+button:contains("Logout"),
+a:contains("Logout"),
+[class*="logout"],
+[id*="logout"],
+a[href="/logout"],
+button[type="button"][class*="btn"][class*="danger"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Add these styles to the HEADER section of the CSS file */
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Insights Icon Button */
+.insights-icon-button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  color: #64748b;
+}
+
+.insights-icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #3b82f6;
+}
+
+.profile-icon-button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+}
+
+.profile-icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.profile-icon-button img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.profile-icon-button:hover img {
+  opacity: 1;
+}
+
 /* ============================
-   MAIN LAYOUT (GRID)
+   MAIN CONTENT
 ============================ */
 .dashboard-main {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 24px;
     width: 100%;
-    box-sizing: border-box;
 }
 
 /* Left column */
 .left-column {
-    position: relative;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -110,7 +186,6 @@ body.dashboard-page {
 
 /* Right column */
 .right-column {
-    position: relative;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -125,40 +200,19 @@ body.dashboard-page {
 .expense-distribution-card,
 .recent-expenses-card {
     background: white;
-    border-radius: 16px;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-sizing: border-box;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Card Hover Effects */
-.add-expense-card:hover,
-.budget-overview-card:hover,
-.expense-distribution-card:hover,
-.recent-expenses-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.12);
 }
 
 /* ============================
    ADD EXPENSE CARD
 ============================ */
-
 .add-expense-card {
-    position: absolute;
-    top: 300px;
-    left: 0;
-    right: 0;
-
-    padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    max-height: fit-content;
-    margin-bottom: 12px;
 }
 
 .add-expense-card h3 {
@@ -214,8 +268,6 @@ body.dashboard-page {
    BUDGET OVERVIEW CARD
 ============================ */
 .budget-overview-card {
-    margin-top: 650px;
-    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -239,16 +291,10 @@ body.dashboard-page {
 /* ============================
    EXPENSE DISTRIBUTION CARD
 ============================ */
-
 .expense-distribution-card {
-    padding: 16px;
     height: 400px;
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 320px;
-    left: 0;
-    right: 0;
 }
 
 .expense-distribution-card h3 {
@@ -271,9 +317,7 @@ body.dashboard-page {
 /* ============================
    RECENT EXPENSES CARD
 ============================ */
-
 .recent-expenses-card {
-    margin-top: 760px;
     height: 350px;
     display: flex;
     flex-direction: column;
@@ -438,11 +482,6 @@ body.dashboard-page {
     }
     
     .expense-distribution-card {
-        position: relative;
-        top: 0;
-        left: 0;
-        right: 0;
-        margin-top: 24px;
         height: 280px;
     }
 
@@ -463,23 +502,54 @@ body.dashboard-page {
 }
 
 @media (max-width: 768px) {
-    body.dashboard-page {
+    .dashboard-container {
         padding: 16px;
     }
-    .dashboard-header {
+    
+    .dashboard-header-content {
         padding: 12px 16px;
+        height: 40px;
     }
+    
+    .dashboard-header h2 {
+        font-size: 14px;
+    }
+    
     .add-expense-card,
     .budget-overview-card,
     .expense-distribution-card,
     .recent-expenses-card {
         padding: 16px;
     }
+    
     .expense-distribution-card {
         height: 240px;
     }
+    
     .recent-expenses-card {
         height: 320px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 12px;
+    }
+    
+    .dashboard-header-content {
+        padding: 10px 12px;
+        height: 36px;
+    }
+    
+    .logout-icon-button {
+        padding: 3px; /* Further reduced from 4px */
+        width: 24px; /* Further reduced */
+        height: 24px; /* Further reduced */
+    }
+    
+    .logout-icon-button img {
+        width: 16px; /* Further reduced from 18px */
+        height: 16px; /* Further reduced from 18px */
     }
 }
  

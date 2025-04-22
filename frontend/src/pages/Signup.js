@@ -2,19 +2,23 @@ import React, { useState } from 'react';
 import { registerUser } from '../utils/api';
 import AuthForm from '../components/AuthForm';
 import { useNavigate } from 'react-router-dom';
+import AuthLayout from '../layouts/AuthLayout'; // ✅ Add layout import
 
 const Signup = () => {
-    const [userData, setUserData] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+    const [userData, setUserData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
     const navigate = useNavigate();
 
     const handleSignup = async () => {
-        // Check for empty fields
         if (!userData.username || !userData.email || !userData.password || !userData.confirmPassword) {
             alert('Signup failed');
             return;
         }
 
-        // Check for password match
         if (userData.password !== userData.confirmPassword) {
             alert('Passwords do not match');
             return;
@@ -30,17 +34,41 @@ const Signup = () => {
     };
 
     return (
-        <AuthForm
-            title="Signup"
-            fields={[
-                { label: "Username", type: "text", value: userData.username, onChange: (e) => setUserData({ ...userData, username: e.target.value }) },
-                { label: "Email", type: "email", value: userData.email, onChange: (e) => setUserData({ ...userData, email: e.target.value }) },
-                { label: "Password", type: "password", value: userData.password, onChange: (e) => setUserData({ ...userData, password: e.target.value }) },
-                { label: "Confirm Password", type: "password", value: userData.confirmPassword, onChange: (e) => setUserData({ ...userData, confirmPassword: e.target.value }) },
-            ]}
-            onSubmit={handleSignup}
-            footer={<p>Already have an account? <a href="/login">Login</a></p>}
-        />
+        <AuthLayout>
+            <AuthForm
+                title="Signup"
+                fields={[
+                    {
+                        label: "Username",
+                        type: "text",
+                        value: userData.username,
+                        onChange: (e) => setUserData({ ...userData, username: e.target.value })
+                    },
+                    {
+                        label: "Email",
+                        type: "email",
+                        value: userData.email,
+                        onChange: (e) => setUserData({ ...userData, email: e.target.value })
+                    },
+                    {
+                        label: "Password",
+                        type: "password",
+                        value: userData.password,
+                        onChange: (e) => setUserData({ ...userData, password: e.target.value })
+                    },
+                    {
+                        label: "Confirm Password",
+                        type: "password",
+                        value: userData.confirmPassword,
+                        onChange: (e) => setUserData({ ...userData, confirmPassword: e.target.value })
+                    }
+                ]}
+                onSubmit={handleSignup}
+                footer={
+                    <p>Already have an account? <a href="/login">Login</a></p>
+                }
+            />
+        </AuthLayout>
     );
 };
 

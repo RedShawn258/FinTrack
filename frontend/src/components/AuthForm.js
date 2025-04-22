@@ -1,25 +1,54 @@
 import React from 'react';
-import InputField from './InputField';
-import Button from './Button';
-import AuthLayout from '../layouts/AuthLayout';
 import './AuthForm.css';
 
-const AuthForm = ({ title, fields, onSubmit, footer, isLoading = false }) => {
+const AuthForm = ({ 
+    title, 
+    fields, 
+    onSubmit, 
+    footer,
+    isLoading,
+    error,
+    submitButtonText = "Submit"
+}) => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!isLoading) {
+            onSubmit(e);
+        }
+    };
+
     return (
-        <AuthLayout>
-            <div className="auth-container">
-                <h2>{title}</h2>
-                {fields.map(({ label, type, value, onChange }, index) => (
-                    <InputField key={index} label={label} type={type} value={value} onChange={onChange} />
+        <div className="auth-container">
+            <h2>{title}</h2>
+            {error && (
+                <div className="error-message">
+                    {error}
+                </div>
+            )}
+            <form onSubmit={handleSubmit}>
+                {fields.map((field, index) => (
+                    <div key={index} className="form-group">
+                        <label className="visually-hidden">{field.label}</label>
+                        <input
+                            type={field.type}
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder={field.label}
+                            disabled={field.disabled || isLoading}
+                            required
+                        />
+                    </div>
                 ))}
-                <Button 
-                    text={isLoading ? "Loading..." : title} 
-                    onClick={onSubmit} 
-                    disabled={isLoading} 
-                />
-                {footer}
-            </div>
-        </AuthLayout>
+                <button 
+                    type="submit" 
+                    className={`submit-button ${isLoading ? 'loading' : ''}`}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Please wait...' : submitButtonText}
+                </button>
+            </form>
+            {footer && <div className="auth-links">{footer}</div>}
+        </div>
     );
 };
 

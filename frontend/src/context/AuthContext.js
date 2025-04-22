@@ -1,10 +1,14 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
 import { getBudgets, getCategories, getTransactions } from '../utils/api';
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        // Check localStorage for saved user data on initial load
+        const savedUser = localStorage.getItem('user');
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
     const [dashboardData, setDashboardData] = useState({
         budgets: [],
         categories: [],
@@ -79,6 +83,16 @@ export const AuthProvider = ({ children }) => {
         setIsInitialized(true);
     }, []);
 
+    // Persist user data to localStorage whenever it changes
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+            localStorage.removeItem('theme'); // Clear theme when logging out
+        }
+    }, [user]);
+
     const login = (userData) => {
         // Ensure userData has all required fields
         if (!userData || !userData.token) {
@@ -87,8 +101,6 @@ export const AuthProvider = ({ children }) => {
         }
         
         setUser(userData);
-        // Store in localStorage for persistence across refreshes
-        localStorage.setItem('user', JSON.stringify(userData));
         
         // Prefetch dashboard data immediately upon login
         prefetchDashboardData(userData.token);
@@ -101,12 +113,12 @@ export const AuthProvider = ({ children }) => {
             categories: [],
             transactions: []
         });
-        // Remove both storages
         localStorage.removeItem('user');
+        localStorage.removeItem('theme'); // Clear theme when logging out
         sessionStorage.removeItem('dashboardData');
     };
 
-    // Function to update dashboard data after changes - memoize to avoid infinite re-renders
+    // Function to update dashboard data after changes - memorize to avoid infinite re-renders
     const refreshDashboardData = useCallback(async () => {
         if (user && user.token) {
             await prefetchDashboardData(user.token);
@@ -119,6 +131,7 @@ export const AuthProvider = ({ children }) => {
             login, 
             logout, 
             dashboardData, 
+            setDashboardData,
             refreshDashboardData,
             isInitialized 
         }}>
