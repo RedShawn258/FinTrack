@@ -11,7 +11,6 @@ import (
 	"github.com/RedShawn258/FinTrack/backend/internal/config"
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
 	"github.com/RedShawn258/FinTrack/backend/internal/handlers"
-	"github.com/RedShawn258/FinTrack/backend/internal/models"
 	"github.com/RedShawn258/FinTrack/backend/internal/routes"
 )
 
@@ -43,14 +42,9 @@ func main() {
 		logger.Fatal("Database initialization failed", zap.Error(err))
 	}
 
-	// Auto-Migrate all models (ensure columns are DATE for start_date, end_date, transaction_date)
-	if err := db.DB.AutoMigrate(
-		&models.User{},
-		&models.Budget{},
-		&models.Category{},
-		&models.Transaction{},
-	); err != nil {
-		logger.Fatal("Failed to auto-migrate models", zap.Error(err))
+	// Run database migrations for all models
+	if err := db.RunMigrations(logger); err != nil {
+		logger.Fatal("Database migration failed", zap.Error(err))
 	}
 	logger.Info("Database migration successful")
 
@@ -62,7 +56,7 @@ func main() {
 	// Set up Gin router
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
