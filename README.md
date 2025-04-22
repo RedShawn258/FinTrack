@@ -18,93 +18,75 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 - **Landing Pages:** Informative landing pages with testimonials and feature highlights.
 - **AWS Infrastructure:** Cloud-based deployment with Infrastructure as Code.
 - **Database Optimization:** Enhanced performance and secure access patterns.
+- **Expense Forecasting:** AI-powered expense predictions and financial planning.
+- **Advanced Unit Testing:** Comprehensive test coverage for all backend features.
 
 ---
 
-## **Sprint 3 Report**
+## **Project Summary**
 
-### **User Stories**
+FinTrack has been successfully completed with all planned features implemented and tested. The project delivers a comprehensive personal finance solution with emphasis on user experience, performance, and security.
 
-#### **Backend Team**
-##### **Sripriya Dugaputi (Database & Gamification)**
-1. **Implement Secure Database Access Patterns (#52)**
-2. **Design Gamification Feature Database Architecture (#53)**
-3. **Optimize AWS RDS Database Performance (#51)**
+### **Key Accomplishments**
 
-##### **Gopinadh Yadlapalli (Infrastructure & Performance)**
-4. **Implement AWS Infrastructure as Code (#56)**
-5. **Develop Enhanced Database Monitoring System (#54)**
-6. **Conduct Enhanced Load Testing and Performance Optimization (#57)**
-
-#### **Frontend Team**
-##### **Durga Mahesh Boppani (Landing Page & Integration)**
-7. **Landing Page and Authentication Integration Improvements (#59)**
-8. **End-to-End Testing for User Flows (#60)**
-9. **Refine "Read More" Information Pages (#58)**
-
-##### **Hemanth Balla (UI Testing & Refinement)**
-10. **Landing Page Component Unit Tests (#62)**
-11. **Information Page Unit Tests (#63)**
-12. **Landing Page Content Refinement (#61)**
-
-### **Successfully Completed Issues**
-
-✅ Landing Page Components and Authentication Integration
-✅ Information Pages with "Read More" Sections
-✅ Comprehensive Testing Strategy (Unit Tests and E2E)
-✅ AWS Infrastructure with IaC Principles
-✅ Database Performance Monitoring and Optimization
-✅ Secure Database Access Patterns
-✅ Gamification Feature Architecture
-✅ Load Testing and Performance Optimization
+✅ Implemented complete expense tracking and budget management system
+✅ Created a gamification system to increase user engagement
+✅ Developed advanced analytics and forecasting capabilities
+✅ Built responsive and intuitive UI/UX across all device types
+✅ Established comprehensive testing framework with high test coverage
+✅ Optimized database performance and security
+✅ Deployed on AWS infrastructure with monitoring and scaling capabilities
 
 ---
 
-## **Sprint 2 Report**
+## **Technology Stack**
 
-### **User Stories**
+### **Backend**
+- **Language**: Go (Golang)
+- **Framework**: Gin Web Framework
+- **Database**: MySQL (AWS RDS)
+- **ORM**: GORM
+- **Authentication**: JWT
+- **Deployment**: AWS (EC2, RDS, S3)
+- **Testing**: Go Testing Framework
 
-#### **Backend Team**
-##### **Sripriya Dugaputi (Budget & Categories)**
-1. **Implement Budget management and Category APIs**
-2. **Create Unit Tests for the respective APIs**
-3. **Build Database tables and respective schema**
+### **Frontend**
+- **Framework**: React.js
+- **State Management**: Redux
+- **UI Library**: Material-UI
+- **Charts**: Chart.js, D3.js
+- **Testing**: Jest, React Testing Library, Cypress
+- **CSS**: Styled Components, SASS
 
-##### **Gopinadh Yadlapalli (Transaction API & Testing)**
-4. **Implement Transaction API and Develop unit test cases for it**
-5. **Create Unit Tests for User Authentication**
-6. **Implement API routings for the new APIs**
-
-#### **Frontend Team**
-##### **Durga Mahesh Boppani (Dashbaord & UI)**
-7. **Implement Dashboard UI with styling**
-8. **Create Data Visualization Components**
-9. **Write Unit Tests for Dashboard feature**
-
-##### **Hemanth Balla (Testing & API calls)**
-10. **Implement Cypress End-to-End Tests**
-11. **Integrate API calls to the backend server**
-12. **Create Unit Tests for User Authentication**
-
-### **Successfully Completed Issues**
-
-✅ Expense Tracking Implementation
-✅ Budget Management Features
-✅ Data Visualization Components
-✅ Responsive Design Implementation
-✅ Comprehensive Unit Tests
-✅ End-to-End Testing with Cypress
-✅ API Documentation
-✅ Error Handling and Validation
+### **Infrastructure**
+- **Cloud Provider**: AWS
+- **CI/CD**: GitHub Actions
+- **Containerization**: Docker
+- **Infrastructure as Code**: Terraform
+- **Monitoring**: CloudWatch, Prometheus
+- **Security**: AWS WAF, AWS Secrets Manager
 
 ---
 
-## **Next Steps for Sprint 4**
-- **Implement User Profile Customization**
-- **Develop Social Sharing Features**
-- **Add Expense Forecasting Capabilities**
-- **Refine Mobile App Experience**
-- **Improve Accessibility Features**
+## **Project Architecture**
+
+### **Backend Architecture**
+The backend follows a clean architecture with the following components:
+- **Handlers**: HTTP request handlers for the REST API
+- **Services**: Business logic layer that implements app features
+- **Repositories**: Data access layer that interacts with the database
+- **Models**: Data models that represent database entities
+- **Middleware**: Authentication, logging, and error handling
+- **Routes**: API route definitions and organization
+
+### **Frontend Architecture**
+The frontend follows a component-based architecture:
+- **Components**: Reusable UI elements
+- **Pages**: Complete page layouts
+- **Services**: API interaction logic
+- **Store**: State management with Redux
+- **Hooks**: Custom React hooks for business logic
+- **Tests**: Unit, integration, and E2E tests
 
 ---
 
@@ -113,7 +95,7 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 ### **Backend Setup**
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/FinTrack.git
+   git clone https://github.com/RedShawn258/FinTrack.git
    cd FinTrack/backend
    ```
 2. Install dependencies:
@@ -121,9 +103,13 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
    go mod init github.com/RedShawn258/FinTrack/backend
    go mod tidy
    ```
-3. Start the server:
+3. Configure environment:
    ```bash
-   cd backend
+   cp .env.example .env
+   # Update the .env file with your configurations
+   ```
+4. Start the server:
+   ```bash
    go run cmd/server/main.go
    ```
 
@@ -136,7 +122,12 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
    ```bash
    npm install
    ```
-3. Start the frontend application:
+3. Configure environment:
+   ```bash
+   cp .env.example .env
+   # Update the .env file with your configurations
+   ```
+4. Start the frontend application:
    ```bash
    npm start
    ```
@@ -144,16 +135,99 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 ### **Running Tests**
 1. Frontend Tests:
    ```bash
+   # Unit tests
    npm test
+   
+   # Coverage report
+   npm test -- --coverage
    ```
 2. Cypress E2E Tests:
    ```bash
+   # Open Cypress test runner
    npm run cypress:open
+   
+   # Run tests headlessly
+   npm run cypress:run
    ```
 3. Backend Tests:
    ```bash
-   go test ./...
+   # Run all tests
+   cd backend
+   ./run_all_tests.sh
+   
+   # Run specific tests
+   go test ./internal/handlers_test
    ```
+
+---
+
+## **API Documentation**
+
+### **Authentication Endpoints**
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/forgot-password` - Password reset request
+- `POST /api/auth/reset-password` - Password reset with token
+
+### **Transaction Endpoints**
+- `GET /api/transactions` - Get user transactions
+- `POST /api/transactions` - Create a new transaction
+- `PUT /api/transactions/:id` - Update a transaction
+- `DELETE /api/transactions/:id` - Delete a transaction
+
+### **Budget Endpoints**
+- `GET /api/budgets` - Get user budgets
+- `POST /api/budgets` - Create a new budget
+- `PUT /api/budgets/:id` - Update a budget
+- `DELETE /api/budgets/:id` - Delete a budget
+
+### **Category Endpoints**
+- `GET /api/categories` - Get all categories
+- `POST /api/categories` - Create a new category
+- `PUT /api/categories/:id` - Update a category
+- `DELETE /api/categories/:id` - Delete a category
+
+### **Forecast Endpoints**
+- `POST /api/forecast/expenses` - Get expense forecasts
+
+### **Gamification Endpoints**
+- `GET /api/gamification/user-status` - Get user's gamification status
+
+---
+
+## **Deployment Guide**
+
+### **AWS Deployment**
+1. Set up AWS infrastructure using Terraform scripts in `infrastructure/` directory
+2. Configure deployment pipeline in GitHub Actions
+3. Deploy backend API to EC2 or ECS
+4. Deploy frontend to S3 with CloudFront distribution
+5. Set up database in RDS with appropriate security groups
+6. Configure monitoring with CloudWatch
+
+### **Docker Deployment**
+1. Build backend Docker image:
+   ```bash
+   docker build -t fintrack-backend ./backend
+   ```
+2. Build frontend Docker image:
+   ```bash
+   docker build -t fintrack-frontend ./frontend
+   ```
+3. Use docker-compose to run the entire stack:
+   ```bash
+   docker-compose up -d
+   ```
+
+---
+
+## **Future Enhancements**
+- **Mobile Applications**: Native iOS and Android versions
+- **Social Features**: Ability to share savings goals with friends
+- **Financial Advisory**: AI-powered financial recommendations
+- **Subscription Management**: Track and optimize recurring expenses
+- **Multi-Currency Support**: Handle transactions in multiple currencies
+- **Data Export**: Export financial data in multiple formats
 
 ---
 
@@ -161,5 +235,11 @@ FinTrack is a personal finance and budgeting platform that helps users gain real
 - **Backend Team:** Sripriya Dugaputi, Gopinadh Yadlapalli
 - **Frontend Team:** Durga Mahesh Boppani, Hemanth Balla
 
+---
 
+---
 
+## **Acknowledgements**
+- Special thanks to our mentors and advisors
+- All open-source libraries and frameworks used in this project
+- The FinTrack team for their dedication and hard work
