@@ -17,10 +17,8 @@ const Navbar = () => {
         {user ? (
           <>
             <Link to="/dashboard">Dashboard</Link>
-            {/* we can keep or remove these extra links if you don't have those pages */}
-            {/* <Link to="/budgets">Budgets</Link>
-            <Link to="/categories">Categories</Link>
-            <Link to="/transactions">Transactions</Link> */}
+            {}
+            {}
             <button onClick={logout}>Logout</button>
           </>
         ) : (
