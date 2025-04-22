@@ -1,44 +1,78 @@
 import React, { useState } from 'react';
-import { resetPassword } from '../utils/api';
 import AuthForm from '../components/AuthForm';
-import { useNavigate } from 'react-router-dom';
+import AuthLayout from '../layouts/AuthLayout';
+import { resetPassword } from '../utils/api';
 
 const ForgotPassword = () => {
-    const [userData, setUserData] = useState({ identifier: '', newPassword: '', confirmPassword: '' });
-    const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
-    const handleResetPassword = async () => {
-        if (!userData.identifier || !userData.newPassword || !userData.confirmPassword) {
-            alert('Failed to reset password');
-            return;
-        }
-        
-        if (userData.newPassword !== userData.confirmPassword) {
-            alert('Passwords do not match');
-            return;
-        }
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
+    
+    if (!email) {
+      alert('Please enter your email address');
+      return;
+    }
 
-        try {
-            await resetPassword(userData);
-            alert('Password reset successful');
-            navigate('/login');
-        } catch (error) {
-            alert(error.response?.data?.error || 'Failed to reset password');
-        }
-    };
+    setIsLoading(true);
+    try {
+      await resetPassword({ email });
+      setEmailSent(true);
+    } catch (error) {
+      console.error('Password reset error:', error);
+      alert(error.response?.data?.error || 'Failed to send reset email. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  if (emailSent) {
     return (
-        <AuthForm
-            title="Reset Password"
-            fields={[
-                { label: "Username/Email", type: "text", value: userData.identifier, onChange: (e) => setUserData({ ...userData, identifier: e.target.value }) },
-                { label: "New Password", type: "password", value: userData.newPassword, onChange: (e) => setUserData({ ...userData, newPassword: e.target.value }) },
-                { label: "Confirm Password", type: "password", value: userData.confirmPassword, onChange: (e) => setUserData({ ...userData, confirmPassword: e.target.value }) },
-            ]}
-            onSubmit={handleResetPassword}
-            footer={<p><a href="/login">Back to Login</a></p>}
-        />
+      <AuthLayout>
+        <div className="auth-container">
+          <h2>Check Your Email</h2>
+          <p>
+            We've sent a password reset link to: <strong>{email}</strong>
+          </p>
+          <p>
+            Please check your email and click the link to reset your password.
+            The link will expire in 15 minutes.
+          </p>
+          <p>
+            <a href="/login">Back to Login</a>
+          </p>
+        </div>
+      </AuthLayout>
     );
+  }
+
+  return (
+    <AuthLayout>
+      <AuthForm
+        title="Forgot Password"
+        fields={[
+          {
+            label: 'Email',
+            type: 'email',
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            placeholder: 'Enter your email address',
+            disabled: isLoading
+          },
+        ]}
+        onSubmit={handleSubmit}
+        submitButtonText={isLoading ? "Sending Reset Link..." : "Send Reset Link"}
+        isLoading={isLoading}
+        footer={
+          <div>
+            <a href="/login">Back to Login</a>
+          </div>
+        }
+      />
+    </AuthLayout>
+  );
 };
 
 export default ForgotPassword;

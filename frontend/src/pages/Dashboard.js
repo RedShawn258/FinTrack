@@ -10,11 +10,14 @@ import { Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
+import { InsightsIcon } from '../icons';
+import useTheme from '../hooks/useTheme';
 
 const Dashboard = () => {
   const { user, dashboardData, refreshDashboardData, logout } = useContext(AuthContext);
   const token = user?.token;
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // Use data from context instead of local state
   const [budgets, setBudgets] = useState(dashboardData.budgets || []);
@@ -84,10 +87,12 @@ const Dashboard = () => {
   // Set dashboard page body class
   useEffect(() => {
     document.body.classList.add('dashboard-page');
+    document.body.setAttribute('data-theme', theme);
     return () => {
       document.body.classList.remove('dashboard-page');
+      document.body.removeAttribute('data-theme');
     };
-  }, []);
+  }, [theme]);
 
   // Memoize calculateDistribution to use in dependency arrays
   const calculateDistribution = useCallback((txs) => {
@@ -328,7 +333,7 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -336,9 +341,29 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <div className="dashboard-header-content">
           <h2>Total Expenses: ${totalExpenses.toFixed(2)}</h2>
-          <button className="logout-icon-button" onClick={handleLogout} title="Logout">
-            <img src="/assets/logout.png" alt="Logout" />
-          </button>
+          <div className="dashboard-header-actions">
+            <button 
+              className="insights-icon-button" 
+              onClick={() => navigate('/insights')} 
+              title="Insights"
+            >
+              <InsightsIcon />
+            </button>
+            <button 
+              className="profile-icon-button" 
+              onClick={() => navigate('/profile')} 
+              title="Profile"
+            >
+              <img src="/assets/profile.svg" alt="Profile" />
+            </button>
+            <button 
+              className="logout-icon-button" 
+              onClick={handleLogout} 
+              title="Logout"
+            >
+              <img src="/assets/logout.png" alt="Logout" />
+            </button>
+          </div>
         </div>
       </div>
 

@@ -136,21 +136,27 @@ const BudgetPlanningGuide = () => {
       </div>
 
       <div className="budget-guide-conclusion">
-        <h2>Taking Action</h2>
-        <p>
-          Start implementing these budgeting strategies today:
-        </p>
-        <ol>
-          <li>Calculate your monthly income</li>
-          <li>Track your expenses for one month</li>
-          <li>Create categories for your spending</li>
-          <li>Set realistic financial goals</li>
-          <li>Choose a budgeting tool or method</li>
-          <li>Review and adjust regularly</li>
-        </ol>
-        <p className="final-thought">
-          "A budget is telling your money where to go instead of wondering where it went." — Dave Ramsey
-        </p>
+        <div className="taking-action">
+          <h2>Taking Action</h2>
+          <p>Start implementing these budgeting strategies today:</p>
+          <ol>
+            <li>Calculate your monthly income</li>
+            <li>Track your expenses for one month</li>
+            <li>Create categories for your spending</li>
+            <li>Set realistic financial goals</li>
+            <li>Choose a budgeting tool or method</li>
+            <li>Review and adjust regularly</li>
+          </ol>
+        </div>
+
+        <div className="quote-section">
+          <div className="quote-text">
+            "A budget is telling your money where to go instead of wondering where it went."
+          </div>
+          <div className="quote-author">
+            — Dave Ramsey
+          </div>
+        </div>
       </div>
     </div>
   );
