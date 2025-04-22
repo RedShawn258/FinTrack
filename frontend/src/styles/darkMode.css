@@ -1,0 +1,240 @@
+/* Base Theme Variables */
+:root {
+  --transition-duration: 0.3s;
+}
+
+/* Dark mode styles - Only apply to authenticated pages */
+.auth-page[data-theme='dark'] {
+  --bg-primary: #1a1f2e;
+  --bg-secondary: #242c3d;
+  --bg-tertiary: #2d364a;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: #374151;
+  --input-bg: #1e2433;
+  --input-border: #374151;
+  --hover-bg: #2d364a;
+  --card-bg: #242c3d;
+  --button-primary: #3b82f6;
+  --button-hover: #2563eb;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --accent-color: #60a5fa;
+  --accent-hover: #3b82f6;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --dropdown-bg: #1e2433;
+  --modal-bg: #1a1f2e;
+  --scrollbar-bg: #1e2433;
+  --scrollbar-thumb: #374151;
+  --scrollbar-hover: #4b5563;
+  --focus-ring: #3b82f6;
+}
+
+/* Light mode styles - Default for all pages */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --bg-tertiary: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --hover-bg: #f9fafb;
+  --card-bg: #ffffff;
+  --button-primary: #3b82f6;
+  --button-hover: #2563eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --dropdown-bg: #ffffff;
+  --modal-bg: #ffffff;
+  --scrollbar-bg: #f3f4f6;
+  --scrollbar-thumb: #d1d5db;
+  --scrollbar-hover: #9ca3af;
+  --focus-ring: #3b82f6;
+}
+
+/* Global Styles */
+* {
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease,
+              border-color var(--transition-duration) ease,
+              box-shadow var(--transition-duration) ease;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+/* Card Styles */
+.card, .hover-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px var(--shadow-color);
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px var(--shadow-color);
+}
+
+/* Form Elements */
+input, select, textarea {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  transition: all var(--transition-duration) ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: 0 0 0 2px var(--focus-ring-shadow);
+}
+
+input:disabled, select:disabled {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+/* Buttons */
+button {
+  background-color: var(--button-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--button-hover);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dropdowns and Modals */
+.dropdown-menu,
+.modal-content {
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px var(--shadow-color);
+  border-radius: 8px;
+}
+
+/* Navigation */
+.nav-link {
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent-color);
+  background-color: var(--hover-bg);
+}
+
+/* Dark mode specific overrides */
+[data-theme='dark'] {
+  /* Profile Card */
+  .profile-card {
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 6px var(--shadow-color);
+  }
+
+  /* Section Headers */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+  }
+
+  /* Labels */
+  label {
+    color: var(--text-secondary);
+  }
+
+  /* Chart Container */
+  .chart-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+  }
+}
+
+/* Theme Preview Styles */
+.theme-preview {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  transition: all 0.2s ease;
+}
+
+.theme-preview:hover {
+  transform: scale(1.05);
+}
+
+.light-preview {
+  background-color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.dark-preview {
+  background-color: #1a1f2e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .card, .hover-card {
+    margin: 8px;
+    padding: 16px;
+  }
+
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on mobile */
+  }
+
+  button {
+    padding: 10px 20px; /* Larger touch target */
+  }
+} 
