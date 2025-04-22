@@ -402,6 +402,7 @@ func TestResetPasswordHandler(t *testing.T) {
 		// Check response content
 		assert.Equal(t, "Password reset successful", response["message"])
 
+
 		err = mock.ExpectationsWereMet()
 		assert.NoError(t, err)
 	})
