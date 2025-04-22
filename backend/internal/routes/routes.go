@@ -21,6 +21,7 @@ func SetupRoutes(router *gin.Engine, logger *zap.Logger, jwtSecret string) {
 	{
 		auth.POST("/register", handlers.RegisterHandler)
 		auth.POST("/login", handlers.LoginHandler)
+		auth.POST("/forgot-password", handlers.ForgotPasswordHandler)
 		auth.POST("/reset-password", handlers.ResetPasswordHandler)
 	}
 
@@ -28,14 +29,10 @@ func SetupRoutes(router *gin.Engine, logger *zap.Logger, jwtSecret string) {
 	protected := router.Group("/api/v1")
 	protected.Use(middlewares.AuthMiddleware())
 	{
-		// Profile example
-		protected.GET("/profile", func(c *gin.Context) {
-			userID := c.MustGet("userID")
-			c.JSON(200, gin.H{
-				"message": "Protected route accessed successfully",
-				"userID":  userID,
-			})
-		})
+		// Profile endpoints
+		protected.GET("/profile", handlers.GetProfileHandler)
+		protected.PUT("/profile", handlers.UpdateProfileHandler)
+		protected.POST("/profile/image", handlers.ProfileImageUploadHandler)
 
 		// Budget endpoints
 		protected.POST("/budgets", handlers.CreateBudget)
@@ -58,5 +55,8 @@ func SetupRoutes(router *gin.Engine, logger *zap.Logger, jwtSecret string) {
 		protected.GET("/features/gamification", handlers.GamificationHandler)
 		protected.GET("/features/analytics", handlers.AnalyticsHandler)
 		protected.GET("/features/notifications", handlers.NotificationHandler)
+
+		// Forecasting feature
+		protected.POST("/forecast/expenses", handlers.ForecastExpensesHandler)
 	}
 }
