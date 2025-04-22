@@ -1,14 +1,20 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import ForgotPassword from '../../pages/ForgotPassword';
 import { resetPassword } from '../../utils/api';
+import { act } from 'react-dom/test-utils';
 
 // Mock the API call
-jest.mock('../../utils/api', () => ({
-  resetPassword: jest.fn()
-}));
+jest.mock('../../utils/api', () => {
+  return {
+    resetPassword: jest.fn().mockImplementation(() => {
+      console.log('Mock resetPassword was called!');
+      return Promise.resolve({ success: true });
+    })
+  };
+});
 
 // Mock the navigation
 const mockNavigate = jest.fn();
@@ -23,7 +29,7 @@ window.alert = mockAlert;
 
 describe('ForgotPassword Page', () => {
   const renderForgotPassword = () => {
-    render(
+    return render(
       <BrowserRouter>
         <ForgotPassword />
       </BrowserRouter>
@@ -37,46 +43,45 @@ describe('ForgotPassword Page', () => {
     mockAlert.mockClear();
   });
 
-  test('renders reset password form with all fields', () => {
+  test('renders forgot password form', () => {
     renderForgotPassword();
-    
-    expect(screen.getByRole('heading', { name: /reset password/i })).toBeInTheDocument();
-    expect(screen.getByLabelText('Username/Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('New Password')).toBeInTheDocument();
-    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(screen.getByText(/forgot password/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /send reset link/i })).toBeInTheDocument();
   });
 
-  test('shows validation error for empty fields', async () => {
+  test('shows error when form is submitted without email', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     renderForgotPassword();
     
-    const resetButton = screen.getByRole('button');
-    await fireEvent.click(resetButton);
-
-    expect(mockAlert).toHaveBeenCalledWith('Failed to reset password');
+    fireEvent.click(screen.getByRole('button', { name: /send reset link/i }));
+    
+    expect(alertMock).toHaveBeenCalledWith('Please enter your email address');
+    alertMock.mockRestore();
   });
 
-  test('shows validation error for mismatched passwords', async () => {
+  test('transitions to success state after form submission', async () => {
     renderForgotPassword();
     
-    const identifierInput = screen.getByLabelText('Username/Email');
-    const newPasswordInput = screen.getByLabelText('New Password');
-    const confirmPasswordInput = screen.getByLabelText('Confirm Password');
-    const resetButton = screen.getByRole('button');
-
-    fireEvent.change(identifierInput, { target: { value: 'Mahesh' } });
-    fireEvent.change(newPasswordInput, { target: { value: 'Mahesh@1078' } });
-    fireEvent.change(confirmPasswordInput, { target: { value: 'wrongpassword' } });
-    await fireEvent.click(resetButton);
-
-    expect(mockAlert).toHaveBeenCalledWith('Passwords do not match');
-    expect(resetPassword).not.toHaveBeenCalled();
+    // Fill in the email field
+    fireEvent.change(screen.getByPlaceholderText('Email'), {
+      target: { value: 'test@example.com' }
+    });
+    
+    // Submit the form by clicking the submit button
+    fireEvent.click(screen.getByRole('button', { name: /send reset link/i }));
+    
+    // Check that the success view is displayed
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /check your email/i })).toBeInTheDocument();
+      expect(screen.getByText(/test@example.com/i)).toBeInTheDocument();
+    });
   });
 
-  test('displays back to login link', () => {
+  test('displays link to return to login page', () => {
     renderForgotPassword();
-    
-    const loginLink = screen.getByRole('link', { name: /back to login/i });
+    const loginLink = screen.getByText('Back to Login');
     expect(loginLink).toBeInTheDocument();
+    expect(loginLink.getAttribute('href')).toBe('/login');
   });
 }); 

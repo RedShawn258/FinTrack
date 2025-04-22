@@ -44,10 +44,10 @@ describe('Signup Page', () => {
     renderSignup();
     
     expect(screen.getByRole('heading', { name: /signup/i })).toBeInTheDocument();
-    expect(screen.getByLabelText('Username')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Confirm Password')).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
@@ -63,10 +63,10 @@ describe('Signup Page', () => {
   test('shows validation error for mismatched passwords', async () => {
     renderSignup();
     
-    const usernameInput = screen.getByLabelText('Username');
-    const emailInput = screen.getByLabelText('Email');
-    const passwordInput = screen.getByLabelText('Password');
-    const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+    const usernameInput = screen.getByPlaceholderText('Username');
+    const emailInput = screen.getByPlaceholderText('Email');
+    const passwordInput = screen.getByPlaceholderText('Password');
+    const confirmPasswordInput = screen.getByPlaceholderText('Confirm Password');
     const signupButton = screen.getByRole('button');
 
     fireEvent.change(usernameInput, { target: { value: 'Mahesh' } });

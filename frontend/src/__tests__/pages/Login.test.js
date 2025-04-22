@@ -47,8 +47,8 @@ describe('Login Page', () => {
     renderLogin();
     
     expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
-    expect(screen.getByLabelText('Username/Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Username/Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
@@ -58,7 +58,7 @@ describe('Login Page', () => {
     const loginButton = screen.getByRole('button');
     await fireEvent.click(loginButton);
 
-    expect(mockAlert).toHaveBeenCalledWith('Please enter both username/email and password');
+    expect(screen.getByText('Please enter both username/email and password')).toBeInTheDocument();
   });
 
   test('displays forgot password and signup links', () => {
