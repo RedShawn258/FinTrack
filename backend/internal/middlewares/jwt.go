@@ -1,12 +1,10 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 
 	"github.com/RedShawn258/FinTrack/backend/internal/services"
@@ -35,23 +33,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		tokenStr := parts[1]
-
-		// Retrieve JWT secret from context
-		secret, exists := c.Get("jwtSecret")
-		if !exists {
-			log.Error("JWT secret not found in context")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			c.Abort()
-			return
-		}
-
-		jwtSecret, ok := secret.(string)
-		if !ok {
-			log.Error("JWT secret type assertion failed")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			c.Abort()
-			return
-		}
 
 		// Get auth service from context to validate access token
 		authService, exists := c.Get("authService")
