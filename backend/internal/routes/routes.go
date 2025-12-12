@@ -38,9 +38,19 @@ func SetupRoutes(router *gin.Engine, logger *zap.Logger, jwtSecret string) {
 		protected.DELETE("/budgets/:id", handlers.DeleteBudget)
 
 		// Category endpoints
-		protected.POST("/categories", handlers.CreateCategory)
 		protected.GET("/categories", handlers.GetCategories)
 		protected.DELETE("/categories/:id", handlers.DeleteCategory)
+
+		// Admin-only endpoints
+		admin := protected.Group("")
+		admin.Use(middlewares.RequireRole("admin"))
+		{
+			// Category management (admin only)
+			admin.POST("/categories", handlers.CreateCategory)
+
+			// User management (admin only)
+			// admin.GET("/users", handlers.GetUsers) // TODO: implement GetUsers handler
+		}
 
 		// Transaction endpoints
 		protected.POST("/transactions", handlers.CreateTransaction)
