@@ -25,6 +25,9 @@ type User struct {
 	Currency             string `gorm:"size:10;default:'USD'"`
 	NotificationsEnabled bool   `gorm:"default:true"`
 	Theme                string `gorm:"size:20;default:'light'"`
+
+	// Role-based access control
+	Role string `gorm:"size:20;default:'user';not null"` // "user" or "admin"
 }
 
 // ProfileResponse represents the public-facing profile data
