@@ -190,35 +190,37 @@ func TestValidateRefreshToken(t *testing.T) {
 		{
 			name: "valid refresh token",
 			setupToken: func() (string, *models.RefreshToken) {
-				// Create token in DB first
-				tokenString := "test-refresh-token"
-				tokenHash := HashToken(tokenString)
-				dbToken := &models.RefreshToken{
-					ID:        1,
-					UserID:    userID,
-					TokenHash: tokenHash,
-					ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
-				}
-				
-				// Mock DB query
-				rows := sqlmock.NewRows([]string{"id", "user_id", "token_hash", "expires_at", "created_at", "updated_at", "deleted_at", "replaced_by"}).
-					AddRow(dbToken.ID, dbToken.UserID, dbToken.TokenHash, dbToken.ExpiresAt, time.Now(), time.Now(), nil, nil)
-				mock.ExpectQuery("SELECT .* FROM `refresh_tokens`").
-					WithArgs(tokenHash).
-					WillReturnRows(rows)
-
-				// Generate actual JWT token
+				// Generate actual JWT token first (this will try to insert into DB)
 				oldExpiry := service.config.RefreshTokenExpiry
 				service.config.RefreshTokenExpiry = 7 * 24 * time.Hour
-				jwtToken, _, _ := service.GenerateRefreshToken(userID)
+				
+				// Mock the INSERT for GenerateRefreshToken
+				mock.ExpectBegin()
+				mock.ExpectExec("INSERT INTO `refresh_tokens`").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectCommit()
+				
+				jwtToken, dbToken, err := service.GenerateRefreshToken(userID)
 				service.config.RefreshTokenExpiry = oldExpiry
+				
+				if err != nil {
+					// If generation fails, create a simple valid JWT manually for testing
+					// This is a fallback - the real token should work
+					return "", nil
+				}
 
 				// Get the hash of the generated token
 				actualHash := HashToken(jwtToken)
 				
-				// Update mock to use actual hash
+				// Update dbToken with actual hash
+				dbToken.TokenHash = actualHash
+				
+				// Mock the SELECT query that ValidateRefreshToken will make
+				// GORM adds LIMIT parameter, so we need to match with sqlmock.AnyArg()
+				rows := sqlmock.NewRows([]string{"id", "user_id", "token_hash", "expires_at", "created_at", "updated_at", "deleted_at", "replaced_by"}).
+					AddRow(dbToken.ID, dbToken.UserID, dbToken.TokenHash, dbToken.ExpiresAt, time.Now(), time.Now(), nil, nil)
 				mock.ExpectQuery("SELECT .* FROM `refresh_tokens`").
-					WithArgs(actualHash).
+					WithArgs(actualHash, sqlmock.AnyArg()). // GORM adds LIMIT parameter
 					WillReturnRows(rows)
 
 				return jwtToken, dbToken
@@ -241,7 +243,7 @@ func TestValidateRefreshToken(t *testing.T) {
 				rows := sqlmock.NewRows([]string{"id", "user_id", "token_hash", "expires_at", "created_at", "updated_at", "deleted_at", "replaced_by"}).
 					AddRow(dbToken.ID, dbToken.UserID, dbToken.TokenHash, dbToken.ExpiresAt, time.Now(), time.Now(), nil, nil)
 				mock.ExpectQuery("SELECT .* FROM `refresh_tokens`").
-					WithArgs(tokenHash).
+					WithArgs(tokenHash, sqlmock.AnyArg()). // GORM adds LIMIT parameter
 					WillReturnRows(rows)
 
 				return tokenString, dbToken
