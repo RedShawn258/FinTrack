@@ -11,7 +11,6 @@ import (
 	"net/smtp"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -19,12 +18,8 @@ import (
 
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
 	"github.com/RedShawn258/FinTrack/backend/internal/models"
+	"github.com/RedShawn258/FinTrack/backend/internal/services"
 )
-
-type Claims struct {
-	UserID uint `json:"userId"`
-	jwt.RegisteredClaims
-}
 
 type RegistrationRequest struct {
 	Username string `json:"username" binding:"required,min=3,max=50"`
@@ -45,6 +40,10 @@ type ResetPasswordRequest struct {
 
 type ForgotPasswordRequest struct {
 	Email string `json:"email" binding:"required,email"`
+}
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refreshToken" binding:"required"`
 }
 
 func RegisterHandler(c *gin.Context) {
@@ -130,17 +129,29 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	tokenString, err := generateJWT(user.ID, c)
+	// Get auth service from context
+	authService, exists := c.Get("authService")
+	if !exists {
+		log.Error("Auth service not found in context")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	service := authService.(*services.AuthService)
+
+	// Generate token pair
+	tokenPair, err := service.GenerateTokenPair(user.ID)
 	if err != nil {
-		log.Error("Failed to generate JWT", zap.Error(err))
+		log.Error("Failed to generate tokens", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
 
 	log.Info("User logged in successfully", zap.Uint("userID", user.ID))
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Login successful",
-		"token":   tokenString,
+		"message":      "Login successful",
+		"accessToken":  tokenPair.AccessToken,
+		"refreshToken": tokenPair.RefreshToken,
+		"expiresIn":    tokenPair.ExpiresIn,
 	})
 }
 
@@ -291,32 +302,40 @@ func ForgotPasswordHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Password reset email sent successfully"})
 }
 
-func generateJWT(userID uint, c *gin.Context) (string, error) {
+// RefreshTokenHandler handles refresh token requests and issues new tokens
+func RefreshTokenHandler(c *gin.Context) {
 	logger, _ := c.Get("logger")
 	log := logger.(*zap.Logger)
 
-	secret, exists := c.Get("jwtSecret")
+	var req RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Warn("Invalid refresh token request", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	// Get auth service from context
+	authService, exists := c.Get("authService")
 	if !exists {
-		log.Error("JWT secret not found in context")
-		return "", nil
+		log.Error("Auth service not found in context")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
 	}
-	jwtSecret, ok := secret.(string)
-	if !ok {
-		log.Error("JWT secret type assertion failed")
-		return "", nil
+	service := authService.(*services.AuthService)
+
+	// Validate and rotate refresh token
+	tokenPair, err := service.ValidateAndRotateRefreshToken(req.RefreshToken)
+	if err != nil {
+		log.Warn("Refresh token validation failed", zap.Error(err))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired refresh token"})
+		return
 	}
 
-	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &Claims{
-		UserID: userID,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(jwtSecret))
+	c.JSON(http.StatusOK, gin.H{
+		"accessToken":  tokenPair.AccessToken,
+		"refreshToken": tokenPair.RefreshToken,
+		"expiresIn":    tokenPair.ExpiresIn,
+	})
 }
 
 // GetProfileHandler retrieves the user profile

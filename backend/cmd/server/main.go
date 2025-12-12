@@ -11,7 +11,9 @@ import (
 	"github.com/RedShawn258/FinTrack/backend/internal/config"
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
 	"github.com/RedShawn258/FinTrack/backend/internal/handlers"
+	"github.com/RedShawn258/FinTrack/backend/internal/repositories"
 	"github.com/RedShawn258/FinTrack/backend/internal/routes"
+	"github.com/RedShawn258/FinTrack/backend/internal/services"
 )
 
 func main() {
@@ -56,6 +58,12 @@ func main() {
 		logger.Error("Failed to recalculate budgets on startup", zap.Error(err))
 	}
 
+	// Initialize repositories
+	tokenRepo := repositories.NewTokenRepository(db.DB, logger)
+
+	// Initialize services
+	authService := services.NewAuthService(cfg, tokenRepo, logger)
+
 	// Set up Gin router
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
@@ -66,10 +74,11 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Middleware to set logger & JWT secret in context for every request
+	// Middleware to set logger, JWT secret, and auth service in context for every request
 	r.Use(func(c *gin.Context) {
 		c.Set("logger", logger)
 		c.Set("jwtSecret", cfg.JWTSecret)
+		c.Set("authService", authService)
 		c.Next()
 	})
 

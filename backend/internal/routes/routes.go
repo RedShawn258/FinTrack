@@ -17,6 +17,7 @@ func SetupRoutes(router *gin.Engine, logger *zap.Logger, jwtSecret string) {
 	{
 		auth.POST("/register", handlers.RegisterHandler)
 		auth.POST("/login", handlers.LoginHandler)
+		auth.POST("/refresh", handlers.RefreshTokenHandler)
 		auth.POST("/forgot-password", handlers.ForgotPasswordHandler)
 		auth.POST("/reset-password", handlers.ResetPasswordHandler)
 	}
