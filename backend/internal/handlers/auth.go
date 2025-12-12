@@ -138,8 +138,14 @@ func LoginHandler(c *gin.Context) {
 	}
 	service := authService.(*services.AuthService)
 
-	// Generate token pair
-	tokenPair, err := service.GenerateTokenPair(user.ID)
+	// Get user role (default to "user" if empty)
+	userRole := user.Role
+	if userRole == "" {
+		userRole = "user"
+	}
+
+	// Generate token pair with user role
+	tokenPair, err := service.GenerateTokenPair(user.ID, userRole)
 	if err != nil {
 		log.Error("Failed to generate tokens", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -323,10 +329,32 @@ func RefreshTokenHandler(c *gin.Context) {
 	}
 	service := authService.(*services.AuthService)
 
-	// Validate and rotate refresh token
-	tokenPair, err := service.ValidateAndRotateRefreshToken(req.RefreshToken)
+	// Validate refresh token to get user ID
+	claims, _, err := service.ValidateRefreshToken(req.RefreshToken)
 	if err != nil {
 		log.Warn("Refresh token validation failed", zap.Error(err))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired refresh token"})
+		return
+	}
+
+	// Fetch user to get current role
+	var user models.User
+	if err := db.DB.First(&user, claims.UserID).Error; err != nil {
+		log.Error("Failed to fetch user for token refresh", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	// Get user role (default to "user" if empty)
+	userRole := user.Role
+	if userRole == "" {
+		userRole = "user"
+	}
+
+	// Validate and rotate refresh token with role
+	tokenPair, err := service.ValidateAndRotateRefreshToken(req.RefreshToken, userRole)
+	if err != nil {
+		log.Warn("Refresh token rotation failed", zap.Error(err))
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired refresh token"})
 		return
 	}

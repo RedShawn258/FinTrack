@@ -53,8 +53,9 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Token is valid; set the user ID in context
+		// Token is valid; set the user ID and role in context
 		c.Set("userID", claims.UserID)
+		c.Set("userRole", claims.Role)
 		c.Next()
 	}
 }
