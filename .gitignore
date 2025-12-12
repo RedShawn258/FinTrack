@@ -1,1 +1,18 @@
 .DS_Store
+
+# Go build artifacts
+backend/server
+backend/*.exe
+backend/*.exe~
+backend/*.dll
+backend/*.so
+backend/*.dylib
+
+# Test binary, built with `go test -c`
+backend/*.test
+
+# Output of the go coverage tool
+backend/*.out
+
+# Go workspace file
+backend/go.work
