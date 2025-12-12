@@ -376,18 +376,17 @@ func TestValidateRefreshToken(t *testing.T) {
 }
 
 func TestGenerateRefreshToken(t *testing.T) {
-	service, _, mock := setupTestService(t)
 	userID := uint(1)
 
 	tests := []struct {
 		name          string
-		setupMock     func()
+		setupMock     func(*testing.T, *AuthService, sqlmock.Sqlmock)
 		expectedError bool
 		description   string
 	}{
 		{
 			name: "successful refresh token generation",
-			setupMock: func() {
+			setupMock: func(t *testing.T, service *AuthService, mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec("INSERT INTO `refresh_tokens`").
 					WillReturnResult(sqlmock.NewResult(1, 1))
@@ -398,7 +397,7 @@ func TestGenerateRefreshToken(t *testing.T) {
 		},
 		{
 			name: "database insert failure",
-			setupMock: func() {
+			setupMock: func(t *testing.T, service *AuthService, mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec("INSERT INTO `refresh_tokens`").
 					WillReturnError(gorm.ErrInvalidDB)
@@ -407,11 +406,22 @@ func TestGenerateRefreshToken(t *testing.T) {
 			expectedError: true,
 			description:   "should return error when DB insert fails",
 		},
+		{
+			name: "JWT signing failure",
+			setupMock: func(t *testing.T, service *AuthService, mock sqlmock.Sqlmock) {
+				// Set invalid secret to cause signing failure
+				service.refreshTokenSecret = ""
+			},
+			expectedError: true,
+			description:   "should return error when JWT signing fails",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.setupMock()
+			service, _, mock := setupTestService(t)
+			tt.setupMock(t, service, mock)
+			
 			token, dbToken, err := service.GenerateRefreshToken(userID)
 
 			if tt.expectedError {
