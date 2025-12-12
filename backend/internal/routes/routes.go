@@ -9,12 +9,8 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine, logger *zap.Logger, jwtSecret string) {
-	// Middleware to set logger & JWT secret in context for every request
-	router.Use(func(c *gin.Context) {
-		c.Set("logger", logger)
-		c.Set("jwtSecret", jwtSecret)
-		c.Next()
-	})
+	// Note: Logger and JWT secret are already set in main.go middleware
+	// No need to set them again here
 
 	// Public endpoints for authentication
 	auth := router.Group("/api/v1/auth")

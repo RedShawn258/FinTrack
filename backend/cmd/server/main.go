@@ -30,9 +30,12 @@ func main() {
 	// Initialize Logger
 	var logger *zap.Logger
 	if cfg.Env == "production" {
-		logger, _ = zap.NewProduction()
+		logger, err = zap.NewProduction()
 	} else {
-		logger, _ = zap.NewDevelopment()
+		logger, err = zap.NewDevelopment()
+	}
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 	defer logger.Sync()
 	logger.Info("Starting FinTrack server", zap.String("environment", cfg.Env))
@@ -56,7 +59,7 @@ func main() {
 	// Set up Gin router
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001"},
+		AllowOrigins:     cfg.CORSOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
