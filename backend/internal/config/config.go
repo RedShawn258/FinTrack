@@ -3,19 +3,23 @@ package config
 import (
 	"os"
 	"strings"
+	"time"
 )
 
 type Config struct {
-	Env        string
-	DBType     string
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPass     string
-	DBName     string
-	JWTSecret  string
-	ServerPort string
-	CORSOrigins []string // Allowed CORS origins
+	Env               string
+	DBType            string
+	DBHost            string
+	DBPort            string
+	DBUser            string
+	DBPass            string
+	DBName            string
+	JWTSecret         string
+	RefreshTokenSecret string // Optional separate secret for refresh tokens
+	ServerPort        string
+	CORSOrigins       []string // Allowed CORS origins
+	AccessTokenExpiry time.Duration
+	RefreshTokenExpiry time.Duration
 }
 
 // LoadConfig loads environment variables into the Config struct.
@@ -28,17 +32,37 @@ func LoadConfig() (*Config, error) {
 		corsOrigins[i] = strings.TrimSpace(origin)
 	}
 
+	// Parse token expiration durations
+	accessTokenExpiry, err := time.ParseDuration(getEnv("ACCESS_TOKEN_EXPIRY", "15m"))
+	if err != nil {
+		accessTokenExpiry = 15 * time.Minute // Default fallback
+	}
+
+	refreshTokenExpiry, err := time.ParseDuration(getEnv("REFRESH_TOKEN_EXPIRY", "168h"))
+	if err != nil {
+		refreshTokenExpiry = 7 * 24 * time.Hour // Default fallback (7 days)
+	}
+
+	// Use separate refresh token secret if provided, otherwise use JWT secret
+	refreshTokenSecret := getEnv("REFRESH_TOKEN_SECRET", "")
+	if refreshTokenSecret == "" {
+		refreshTokenSecret = getEnv("JWT_SECRET", "your-secret-key")
+	}
+
 	config := &Config{
-		Env:         getEnv("ENV", "development"),
-		DBType:      getEnv("DB_TYPE", "mysql"),
-		DBHost:      getEnv("DB_HOST", "localhost"),
-		DBPort:      getEnv("DB_PORT", "3306"),
-		DBUser:      getEnv("DB_USER", "root"),
-		DBPass:      getEnv("DB_PASS", "password"),
-		DBName:      getEnv("DB_NAME", "fintrack"),
-		JWTSecret:   getEnv("JWT_SECRET", "your-secret-key"),
-		ServerPort:  getEnv("PORT", "8080"),
-		CORSOrigins: corsOrigins,
+		Env:                getEnv("ENV", "development"),
+		DBType:             getEnv("DB_TYPE", "mysql"),
+		DBHost:             getEnv("DB_HOST", "localhost"),
+		DBPort:             getEnv("DB_PORT", "3306"),
+		DBUser:             getEnv("DB_USER", "root"),
+		DBPass:             getEnv("DB_PASS", "password"),
+		DBName:             getEnv("DB_NAME", "fintrack"),
+		JWTSecret:          getEnv("JWT_SECRET", "your-secret-key"),
+		RefreshTokenSecret: refreshTokenSecret,
+		ServerPort:         getEnv("PORT", "8080"),
+		CORSOrigins:        corsOrigins,
+		AccessTokenExpiry:  accessTokenExpiry,
+		RefreshTokenExpiry: refreshTokenExpiry,
 	}
 
 	return config, nil
