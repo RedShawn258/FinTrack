@@ -1,5 +1,9 @@
 .DS_Store
 
+# Documentation files (instructional)
+*.md
+!README.md
+
 # Go build artifacts
 backend/server
 backend/*.exe
