@@ -24,6 +24,7 @@ func RunMigrations(logger *zap.Logger) error {
 		&models.Badge{},
 		&models.UserBadge{},
 		&models.UserPoints{},
+		&models.RefreshToken{},
 	)
 
 	if err != nil {
