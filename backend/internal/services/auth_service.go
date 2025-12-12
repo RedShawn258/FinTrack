@@ -43,7 +43,8 @@ type TokenPair struct {
 
 // AccessTokenClaims represents the claims in an access token
 type AccessTokenClaims struct {
-	UserID uint `json:"userId"`
+	UserID uint   `json:"userId"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -59,12 +60,18 @@ func HashToken(token string) string {
 	return hex.EncodeToString(sum[:])
 }
 
-// GenerateAccessToken creates a short-lived access token
-func (s *AuthService) GenerateAccessToken(userID uint) (string, error) {
+// GenerateAccessToken creates a short-lived access token with role claim
+func (s *AuthService) GenerateAccessToken(userID uint, role string) (string, error) {
 	expirationTime := time.Now().Add(s.config.AccessTokenExpiry)
+	
+	// Default to "user" role if empty
+	if role == "" {
+		role = "user"
+	}
 	
 	claims := &AccessTokenClaims{
 		UserID: userID,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -187,7 +194,8 @@ func (s *AuthService) ValidateRefreshToken(tokenString string) (*RefreshTokenCla
 }
 
 // ValidateAndRotateRefreshToken validates a refresh token and issues new tokens (rotation)
-func (s *AuthService) ValidateAndRotateRefreshToken(refreshTokenString string) (*TokenPair, error) {
+// role parameter is required to include role claim in the new access token
+func (s *AuthService) ValidateAndRotateRefreshToken(refreshTokenString string, role string) (*TokenPair, error) {
 	// Validate the refresh token
 	claims, dbToken, err := s.ValidateRefreshToken(refreshTokenString)
 	if err != nil {
@@ -196,8 +204,13 @@ func (s *AuthService) ValidateAndRotateRefreshToken(refreshTokenString string) (
 
 	userID := claims.UserID
 
-	// Generate new access token
-	newAccessToken, err := s.GenerateAccessToken(userID)
+	// Default to "user" role if empty
+	if role == "" {
+		role = "user"
+	}
+
+	// Generate new access token with role
+	newAccessToken, err := s.GenerateAccessToken(userID, role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate access token: %w", err)
 	}
@@ -221,9 +234,14 @@ func (s *AuthService) ValidateAndRotateRefreshToken(refreshTokenString string) (
 	}, nil
 }
 
-// GenerateTokenPair generates both access and refresh tokens for a user
-func (s *AuthService) GenerateTokenPair(userID uint) (*TokenPair, error) {
-	accessToken, err := s.GenerateAccessToken(userID)
+// GenerateTokenPair generates both access and refresh tokens for a user with role
+func (s *AuthService) GenerateTokenPair(userID uint, role string) (*TokenPair, error) {
+	// Default to "user" role if empty
+	if role == "" {
+		role = "user"
+	}
+
+	accessToken, err := s.GenerateAccessToken(userID, role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate access token: %w", err)
 	}
