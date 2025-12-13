@@ -46,57 +46,18 @@ type RefreshTokenRequest struct {
 	RefreshToken string `json:"refreshToken" binding:"required"`
 }
 
-func RegisterHandler(c *gin.Context) {
-	logger, _ := c.Get("logger")
-	log := logger.(*zap.Logger)
-
-	var req RegistrationRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Warn("Invalid registration data", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	email := strings.ToLower(strings.TrimSpace(req.Email))
-	username := strings.TrimSpace(req.Username)
-
-	var existingUser models.User
-	if err := db.DB.Where("username = ? OR email = ?", username, email).First(&existingUser).Error; err == nil {
-		log.Warn("Attempt to register duplicate user", zap.String("username", username), zap.String("email", email))
-		c.JSON(http.StatusConflict, gin.H{"error": "Username or email already in use"})
-		return
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Error("Failed to hash password", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-		return
-	}
-
-	newUser := models.User{
-		Username:     username,
-		Email:        email,
-		PasswordHash: string(hashedPassword),
-	}
-
-	if err := db.DB.Create(&newUser).Error; err != nil {
-		log.Error("Failed to create user in DB", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
-		return
-	}
-
-	log.Info("User registered successfully", zap.Uint("userID", newUser.ID))
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "User registration successful",
-		"user": gin.H{
-			"id":       newUser.ID,
-			"username": newUser.Username,
-			"email":    newUser.Email,
-		},
-	})
-}
-
+// LoginHandler handles user login
+// @Summary      User login
+// @Description  Authenticate user with username/email and password, returns access and refresh tokens
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      LoginRequest  true  "Login credentials"
+// @Success      200      {object}  map[string]interface{}  "Login successful"
+// @Failure      400      {object}  map[string]string  "Invalid request"
+// @Failure      401      {object}  map[string]string  "Invalid credentials"
+// @Failure      500      {object}  map[string]string  "Internal server error"
+// @Router       /auth/login [post]
 func LoginHandler(c *gin.Context) {
 	logger, _ := c.Get("logger")
 	log := logger.(*zap.Logger)
@@ -158,6 +119,57 @@ func LoginHandler(c *gin.Context) {
 		"accessToken":  tokenPair.AccessToken,
 		"refreshToken": tokenPair.RefreshToken,
 		"expiresIn":    tokenPair.ExpiresIn,
+	})
+}
+
+func RegisterHandler(c *gin.Context) {
+	logger, _ := c.Get("logger")
+	log := logger.(*zap.Logger)
+
+	var req RegistrationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Warn("Invalid registration data", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+	username := strings.TrimSpace(req.Username)
+
+	var existingUser models.User
+	if err := db.DB.Where("username = ? OR email = ?", username, email).First(&existingUser).Error; err == nil {
+		log.Warn("Attempt to register duplicate user", zap.String("username", username), zap.String("email", email))
+		c.JSON(http.StatusConflict, gin.H{"error": "Username or email already in use"})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Error("Failed to hash password", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	newUser := models.User{
+		Username:     username,
+		Email:        email,
+		PasswordHash: string(hashedPassword),
+	}
+
+	if err := db.DB.Create(&newUser).Error; err != nil {
+		log.Error("Failed to create user in DB", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
+		return
+	}
+
+	log.Info("User registered successfully", zap.Uint("userID", newUser.ID))
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "User registration successful",
+		"user": gin.H{
+			"id":       newUser.ID,
+			"username": newUser.Username,
+			"email":    newUser.Email,
+		},
 	})
 }
 
@@ -309,6 +321,17 @@ func ForgotPasswordHandler(c *gin.Context) {
 }
 
 // RefreshTokenHandler handles refresh token requests and issues new tokens
+// @Summary      Refresh access token
+// @Description  Validates refresh token and returns new access and refresh token pair (token rotation)
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      RefreshTokenRequest  true  "Refresh token"
+// @Success      200      {object}  map[string]interface{}  "New token pair"
+// @Failure      400      {object}  map[string]string  "Invalid request"
+// @Failure      401      {object}  map[string]string  "Invalid or expired refresh token"
+// @Failure      500      {object}  map[string]string  "Internal server error"
+// @Router       /auth/refresh [post]
 func RefreshTokenHandler(c *gin.Context) {
 	logger, _ := c.Get("logger")
 	log := logger.(*zap.Logger)

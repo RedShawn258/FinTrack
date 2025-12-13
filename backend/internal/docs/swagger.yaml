@@ -1,0 +1,284 @@
+basePath: /api/v1
+definitions:
+  handlers.CategoryRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  handlers.LoginRequest:
+    properties:
+      identifier:
+        type: string
+      password:
+        maxLength: 100
+        minLength: 6
+        type: string
+    required:
+    - identifier
+    - password
+    type: object
+  handlers.RefreshTokenRequest:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
+  handlers.TransactionRequest:
+    properties:
+      amount:
+        type: number
+      categoryId:
+        description: null => uncategorized
+        type: integer
+      description:
+        type: string
+      transactionDate:
+        type: string
+    required:
+    - amount
+    - transactionDate
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@fintrack.com
+    name: API Support
+  description: |-
+    Personal Finance & Budgeting Platform API
+    This API provides endpoints for expense tracking, budget management, and financial insights.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: FinTrack API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with username/email and password, returns access
+        and refresh tokens
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Validates refresh token and returns new access and refresh token
+        pair (token rotation)
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New token pair
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid or expired refresh token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh access token
+      tags:
+      - auth
+  /categories:
+    post:
+      consumes:
+      - application/json
+      description: Create a new category. If category with same name exists for user,
+        it will be overwritten. Admin only.
+      parameters:
+      - description: Category data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Category updated (already existed)
+          schema:
+            additionalProperties: true
+            type: object
+        "201":
+          description: Category created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'Forbidden: admin access required'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create category
+      tags:
+      - categories
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get all transactions for the authenticated user, with optional
+        filtering by date range and category
+      parameters:
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: startDate
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: endDate
+        type: string
+      - description: Filter by category ID
+        in: query
+        name: categoryId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of transactions
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get transactions
+      tags:
+      - transactions
+    post:
+      consumes:
+      - application/json
+      description: Create a new transaction and recalculate affected budgets
+      parameters:
+      - description: Transaction data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Transaction created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create transaction
+      tags:
+      - transactions
+securityDefinitions:
+  BearerAuth:
+    description: 'Type "Bearer" followed by a space and JWT token. Example: "Bearer
+      eyJhbGc..."'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

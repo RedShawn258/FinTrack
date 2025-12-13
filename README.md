@@ -163,35 +163,62 @@ The frontend follows a component-based architecture:
 
 ## **API Documentation**
 
-### **Authentication Endpoints**
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/forgot-password` - Password reset request
-- `POST /api/auth/reset-password` - Password reset with token
+### **Interactive Swagger Documentation**
 
-### **Transaction Endpoints**
-- `GET /api/transactions` - Get user transactions
-- `POST /api/transactions` - Create a new transaction
-- `PUT /api/transactions/:id` - Update a transaction
-- `DELETE /api/transactions/:id` - Delete a transaction
+The API is fully documented using Swagger (OpenAPI 3.0). Once the server is running, you can access the interactive API documentation at:
 
-### **Budget Endpoints**
-- `GET /api/budgets` - Get user budgets
-- `POST /api/budgets` - Create a new budget
-- `PUT /api/budgets/:id` - Update a budget
-- `DELETE /api/budgets/:id` - Delete a budget
+**http://localhost:8080/docs**
 
-### **Category Endpoints**
-- `GET /api/categories` - Get all categories
-- `POST /api/categories` - Create a new category
-- `PUT /api/categories/:id` - Update a category
-- `DELETE /api/categories/:id` - Delete a category
+The Swagger UI provides:
+- Complete API endpoint documentation
+- Request/response schemas
+- Try-it-out functionality to test endpoints
+- Authentication support (Bearer token)
 
-### **Forecast Endpoints**
-- `POST /api/forecast/expenses` - Get expense forecasts
+### **Generating Swagger Documentation**
 
-### **Gamification Endpoints**
-- `GET /api/gamification/user-status` - Get user's gamification status
+To regenerate the Swagger documentation after adding or modifying API annotations:
+
+```bash
+cd backend
+# Install swag CLI if not already installed
+go install github.com/swaggo/swag/cmd/swag@latest
+
+# Generate documentation
+swag init -g cmd/server/main.go -o internal/docs
+```
+
+### **API Endpoints Overview**
+
+#### **Authentication Endpoints**
+- `POST /api/v1/auth/register` - Register a new user
+- `POST /api/v1/auth/login` - User login (returns access & refresh tokens)
+- `POST /api/v1/auth/refresh` - Refresh access token using refresh token
+- `POST /api/v1/auth/forgot-password` - Password reset request
+- `POST /api/v1/auth/reset-password` - Password reset with token
+
+#### **Transaction Endpoints** (Protected - JWT required)
+- `GET /api/v1/transactions` - Get user transactions (supports query params: startDate, endDate, categoryId)
+- `POST /api/v1/transactions` - Create a new transaction
+- `PUT /api/v1/transactions/:id` - Update a transaction
+- `DELETE /api/v1/transactions/:id` - Delete a transaction
+
+#### **Budget Endpoints** (Protected - JWT required)
+- `GET /api/v1/budgets` - Get user budgets
+- `POST /api/v1/budgets` - Create a new budget
+- `PUT /api/v1/budgets/:id` - Update a budget
+- `DELETE /api/v1/budgets/:id` - Delete a budget
+
+#### **Category Endpoints** (Protected - JWT required)
+- `GET /api/v1/categories` - Get all user categories
+- `POST /api/v1/categories` - Create a new category (Admin only)
+- `DELETE /api/v1/categories/:id` - Delete a category
+
+#### **Forecast Endpoints** (Protected - JWT required)
+- `POST /api/v1/forecast/expenses` - Get expense forecasts
+
+#### **Gamification Endpoints** (Protected - JWT required)
+- `GET /api/v1/features/gamification` - Get user's gamification status
 
 ---
 

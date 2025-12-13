@@ -39,7 +39,19 @@ func recalcAllBudgetsForTransaction(tx models.Transaction, log *zap.Logger) {
 	}
 }
 
-// CreateTransaction: inserts new record, then recalc budgets that might be affected.
+// CreateTransaction creates a new transaction
+// @Summary      Create transaction
+// @Description  Create a new transaction and recalculate affected budgets
+// @Tags         transactions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body      TransactionRequest  true  "Transaction data"
+// @Success      201      {object}  map[string]interface{}  "Transaction created"
+// @Failure      400      {object}  map[string]string  "Invalid request"
+// @Failure      401      {object}  map[string]string  "Unauthorized"
+// @Failure      500      {object}  map[string]string  "Internal server error"
+// @Router       /transactions [post]
 func CreateTransaction(c *gin.Context) {
 	logger, _ := c.Get("logger")
 	log := logger.(*zap.Logger)
@@ -82,6 +94,20 @@ func CreateTransaction(c *gin.Context) {
 	})
 }
 
+// GetTransactions retrieves user's transactions with optional filters
+// @Summary      Get transactions
+// @Description  Get all transactions for the authenticated user, with optional filtering by date range and category
+// @Tags         transactions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        startDate    query     string  false  "Start date (YYYY-MM-DD)"
+// @Param        endDate      query     string  false  "End date (YYYY-MM-DD)"
+// @Param        categoryId   query     string  false  "Filter by category ID"
+// @Success      200          {object}  map[string]interface{}  "List of transactions"
+// @Failure      401          {object}  map[string]string  "Unauthorized"
+// @Failure      500          {object}  map[string]string  "Internal server error"
+// @Router       /transactions [get]
 func GetTransactions(c *gin.Context) {
 	logger, _ := c.Get("logger")
 	log := logger.(*zap.Logger)

@@ -17,7 +17,20 @@ type CategoryRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 
-// CreateCategory: Overwrite if (user_id, name) already exists; else create new.
+// CreateCategory creates a new category (admin only)
+// @Summary      Create category
+// @Description  Create a new category. If category with same name exists for user, it will be overwritten. Admin only.
+// @Tags         categories
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body      CategoryRequest  true  "Category data"
+// @Success      200      {object}  map[string]interface{}  "Category updated (already existed)"
+// @Success      201      {object}  map[string]interface{}  "Category created"
+// @Failure      400      {object}  map[string]string  "Invalid request"
+// @Failure      403      {object}  map[string]string  "Forbidden: admin access required"
+// @Failure      500      {object}  map[string]string  "Internal server error"
+// @Router       /categories [post]
 func CreateCategory(c *gin.Context) {
 	logger, _ := c.Get("logger")
 	log := logger.(*zap.Logger)
