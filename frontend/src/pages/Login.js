@@ -1,36 +1,37 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../utils/api';
-import { AuthContext } from '../context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../store/slices/authSlice';
 import AuthForm from '../components/AuthForm';
-import AuthLayout from '../layouts/AuthLayout'; // ✅ Import layout
+import AuthLayout from '../layouts/AuthLayout';
 
 const Login = () => {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
-    const { login } = useContext(AuthContext);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth);
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleLogin = async () => {
         if (!identifier || !password) {
-            setError('Please enter both username/email and password');
             return;
         }
 
-        setIsLoading(true);
-        setError(''); // Clear any previous errors
-
         try {
-            const response = await loginUser({ identifier, password });
-            login(response.data);
-            navigate('/dashboard');
+            const result = await dispatch(loginUser({ identifier, password })).unwrap();
+            if (result) {
+                navigate('/dashboard');
+            }
         } catch (error) {
-            const errorMessage = error.response?.data?.error || 'Invalid credentials';
-            setError(errorMessage);
-        } finally {
-            setIsLoading(false);
+            // Error is handled by Redux state
+            console.error('Login failed:', error);
         }
     };
 

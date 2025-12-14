@@ -1,6 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, AuthContext } from './context/AuthContext';
+import { Provider, useSelector, useDispatch } from 'react-redux';
+import { store } from './store/store';
+import { initializeAuth } from './store/slices/authSlice';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -19,16 +21,29 @@ import Insights from './pages/Insights';
 import './styles/darkMode.css';
 
 const ProtectedRoute = ({ children }) => {
-  const { user } = useContext(AuthContext);
-  if (!user) {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isLoading = useSelector((state) => state.auth.isLoading);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Or a proper loading component
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
+
   return children;
 };
 
 const AppContent = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
   const hideNavbar = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/dashboard', '/profile', '/insights'].includes(location.pathname);
+
+  // Initialize auth state on app load
+  useEffect(() => {
+    dispatch(initializeAuth());
+  }, [dispatch]);
 
   useEffect(() => {
     // Initialize theme from localStorage or default to 'light'
@@ -90,12 +105,12 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
+    <Provider store={store}>
       <Router>
         <ScrollToTop />
         <AppContent />
       </Router>
-    </AuthProvider>
+    </Provider>
   );
 };
 
