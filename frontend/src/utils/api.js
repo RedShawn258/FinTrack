@@ -1,117 +1,97 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api/v1";
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+// Use the axios instance with auto-refresh interceptor
+import apiClient from './axios';
 
 // ========== Auth Endpoints ==========
 
 export const registerUser = async (userData) => {
-  return await api.post("/auth/register", userData);
+  return await apiClient.post("/auth/register", userData);
 };
 
+// Note: loginUser is now handled by authService.js and Redux
+// This is kept for backward compatibility if needed
 export const loginUser = async (credentials) => {
-  return await api.post("/auth/login", credentials);
+  return await apiClient.post("/auth/login", credentials);
 };
 
 export const resetPassword = async (data) => {
-  return await api.post("/auth/forgot-password", { email: data.email });
+  return await apiClient.post("/auth/forgot-password", { email: data.email });
 };
 
 export const resetPasswordWithToken = async (data) => {
-  return await api.post("/auth/reset-password", {
+  return await apiClient.post("/auth/reset-password", {
     token: data.token,
     newPassword: data.password,
     confirmPassword: data.password
   });
 };
 
-export const fetchProfile = async (token) => {
-  return await api.get("/profile", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const fetchProfile = async () => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.get("/profile");
 };
 
-export const updateProfile = async (token, profileData) => {
-  return await api.put("/profile", profileData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const updateProfile = async (profileData) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.put("/profile", profileData);
 };
 
 // ========== Budget Endpoints ==========
 
-export const getBudgets = async (token) => {
-  return await api.get("/budgets", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getBudgets = async () => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.get("/budgets");
 };
 
-export const createBudget = async (token, budgetData) => {
-  return await api.post("/budgets", budgetData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const createBudget = async (budgetData) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.post("/budgets", budgetData);
 };
 
-export const updateBudget = async (token, budgetId, budgetData) => {
-  return await api.put(`/budgets/${budgetId}`, budgetData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const updateBudget = async (budgetId, budgetData) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.put(`/budgets/${budgetId}`, budgetData);
 };
 
-export const deleteBudget = async (token, budgetId) => {
-  return await api.delete(`/budgets/${budgetId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const deleteBudget = async (budgetId) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.delete(`/budgets/${budgetId}`);
 };
 
 // ========== Category Endpoints ==========
 
-export const getCategories = async (token) => {
-  return await api.get("/categories", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getCategories = async () => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.get("/categories");
 };
 
-export const createCategory = async (token, categoryData) => {
-  return await api.post("/categories", categoryData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const createCategory = async (categoryData) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.post("/categories", categoryData);
 };
 
-export const deleteCategory = async (token, categoryId) => {
-  return await api.delete(`/categories/${categoryId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const deleteCategory = async (categoryId) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.delete(`/categories/${categoryId}`);
 };
 
 // ========== Transaction Endpoints ==========
 
-export const getTransactions = async (token, params = {}) => {
-  return await api.get("/transactions", {
-    headers: { Authorization: `Bearer ${token}` },
-    params,
-  });
+export const getTransactions = async (params = {}) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.get("/transactions", { params });
 };
 
-export const createTransaction = async (token, txData) => {
-  return await api.post("/transactions", txData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const createTransaction = async (txData) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.post("/transactions", txData);
 };
 
-export const updateTransaction = async (token, txId, txData) => {
-  return await api.put(`/transactions/${txId}`, txData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const updateTransaction = async (txId, txData) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.put(`/transactions/${txId}`, txData);
 };
 
-export const deleteTransaction = async (token, txId) => {
-  return await api.delete(`/transactions/${txId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const deleteTransaction = async (txId) => {
+  // Token is automatically attached by axios interceptor
+  return await apiClient.delete(`/transactions/${txId}`);
 };
