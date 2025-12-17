@@ -180,3 +180,6 @@ const authSlice = createSlice({
 export const { setToken, clearToken, setUser, clearError } = authSlice.actions;
 export default authSlice.reducer;
 
+
+
+
