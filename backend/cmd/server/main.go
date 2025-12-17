@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 
+	"github.com/RedShawn258/FinTrack/backend/internal/cache"
 	"github.com/RedShawn258/FinTrack/backend/internal/config"
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
 	"github.com/RedShawn258/FinTrack/backend/internal/handlers"
@@ -80,6 +81,18 @@ func main() {
 	// Initialize repositories
 	tokenRepo := repositories.NewTokenRepository(db.DB, logger)
 
+	// Initialize cache service
+	cacheService, err := cache.NewCacheService(cfg.RedisAddr, cfg.RedisPassword, cfg.RedisDB, cfg.CacheEnabled, logger)
+	if err != nil {
+		logger.Warn("Failed to initialize cache service", zap.Error(err))
+		logger.Info("Continuing without cache")
+	}
+	defer func() {
+		if cacheService != nil {
+			cacheService.Close()
+		}
+	}()
+
 	// Initialize services
 	authService := services.NewAuthService(cfg, tokenRepo, logger)
 
@@ -93,16 +106,19 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Middleware to set logger, JWT secret, and auth service in context for every request
+	// Middleware to set logger, JWT secret, auth service, and cache service in context for every request
 	r.Use(func(c *gin.Context) {
 		c.Set("logger", logger)
 		c.Set("jwtSecret", cfg.JWTSecret)
 		c.Set("authService", authService)
+		if cacheService != nil {
+			c.Set("cacheService", cacheService)
+		}
 		c.Next()
 	})
 
 	// Define routes
-	routes.SetupRoutes(r, logger, cfg.JWTSecret)
+	routes.SetupRoutes(r, logger, cfg.JWTSecret, cacheService)
 
 	// Run the server
 	addr := ":" + cfg.ServerPort
