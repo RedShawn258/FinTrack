@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -20,6 +21,10 @@ type Config struct {
 	CORSOrigins       []string // Allowed CORS origins
 	AccessTokenExpiry time.Duration
 	RefreshTokenExpiry time.Duration
+	RedisAddr         string
+	RedisPassword     string
+	RedisDB           int
+	CacheEnabled      bool // Toggle to disable caching in dev
 }
 
 // LoadConfig loads environment variables into the Config struct.
@@ -49,6 +54,17 @@ func LoadConfig() (*Config, error) {
 		refreshTokenSecret = getEnv("JWT_SECRET", "your-secret-key")
 	}
 
+	// Parse Redis DB number
+	redisDB := 0
+	if redisDBStr := getEnv("REDIS_DB", "0"); redisDBStr != "" {
+		if parsed, err := strconv.Atoi(redisDBStr); err == nil {
+			redisDB = parsed
+		}
+	}
+
+	// Cache enabled flag (default true, can disable in dev)
+	cacheEnabled := getEnv("CACHE_ENABLED", "true") == "true"
+
 	config := &Config{
 		Env:                getEnv("ENV", "development"),
 		DBType:             getEnv("DB_TYPE", "mysql"),
@@ -63,6 +79,10 @@ func LoadConfig() (*Config, error) {
 		CORSOrigins:        corsOrigins,
 		AccessTokenExpiry:  accessTokenExpiry,
 		RefreshTokenExpiry: refreshTokenExpiry,
+		RedisAddr:          getEnv("REDIS_ADDR", "localhost:6379"),
+		RedisPassword:      getEnv("REDIS_PASSWORD", ""),
+		RedisDB:            redisDB,
+		CacheEnabled:       cacheEnabled,
 	}
 
 	return config, nil
