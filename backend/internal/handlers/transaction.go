@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	"github.com/RedShawn258/FinTrack/backend/internal/cache"
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
 	"github.com/RedShawn258/FinTrack/backend/internal/models"
 )
@@ -87,6 +89,9 @@ func CreateTransaction(c *gin.Context) {
 
 	// Recalc all budgets that might include this transaction
 	recalcAllBudgetsForTransaction(newTx, log)
+
+	// Invalidate transaction summary cache for this user
+	invalidateTransactionCache(c, userID, log)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message":     "Transaction created successfully",
@@ -184,6 +189,9 @@ func UpdateTransaction(c *gin.Context) {
 	// Recalc budgets for newTx (apply its effect)
 	recalcAllBudgetsForTransaction(existing, log)
 
+	// Invalidate transaction summary cache for this user
+	invalidateTransactionCache(c, userID, log)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message":     "Transaction updated successfully",
 		"transaction": existing,
@@ -213,5 +221,28 @@ func DeleteTransaction(c *gin.Context) {
 	// Recalc budgets that included this transaction
 	recalcAllBudgetsForTransaction(transaction, log)
 
+	// Invalidate transaction summary cache for this user
+	invalidateTransactionCache(c, userID, log)
+
 	c.JSON(http.StatusOK, gin.H{"message": "Transaction deleted successfully"})
+}
+
+// invalidateTransactionCache invalidates all transaction summary cache keys for a user
+func invalidateTransactionCache(c *gin.Context, userID uint, log *zap.Logger) {
+	var cacheService *cache.CacheService
+	if cs, exists := c.Get("cacheService"); exists && cs != nil {
+		cacheService = cs.(*cache.CacheService)
+	}
+
+	if cacheService == nil || !cacheService.IsEnabled() {
+		return
+	}
+
+	ctx := context.Background()
+	pattern := cache.GenerateKey("tx:summary", userID) + "*"
+	if err := cacheService.DeletePattern(ctx, pattern); err != nil {
+		log.Warn("Failed to invalidate transaction cache", zap.Error(err))
+	} else {
+		log.Debug("Invalidated transaction summary cache", zap.Uint("userID", userID))
+	}
 }

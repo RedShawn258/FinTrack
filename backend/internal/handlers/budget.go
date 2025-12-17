@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
+	"github.com/RedShawn258/FinTrack/backend/internal/cache"
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
 	"github.com/RedShawn258/FinTrack/backend/internal/models"
 )
@@ -106,6 +108,10 @@ func CreateBudget(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recalc budget"})
 			return
 		}
+		
+		// Invalidate budget summary cache for affected months
+		invalidateBudgetCache(c, userID, existing.StartDate, existing.EndDate, log)
+
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Budget already exists, overwriting.",
 			"budget":  existing,
@@ -131,6 +137,10 @@ func CreateBudget(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recalc budget"})
 			return
 		}
+
+		// Invalidate budget summary cache for affected months
+		invalidateBudgetCache(c, userID, newBudget.StartDate, newBudget.EndDate, log)
+
 		c.JSON(http.StatusCreated, gin.H{
 			"message": "Budget created successfully",
 			"budget":  newBudget,
@@ -212,6 +222,10 @@ func UpdateBudget(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recalc budget"})
 		return
 	}
+
+	// Invalidate budget summary cache for affected months
+	invalidateBudgetCache(c, userID, existing.StartDate, existing.EndDate, log)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Budget updated successfully",
 		"budget":  existing,
@@ -225,11 +239,22 @@ func DeleteBudget(c *gin.Context) {
 	userID := c.MustGet("userID").(uint)
 	budgetID := c.Param("id")
 
-	if err := db.DB.Where("id = ? AND user_id = ?", budgetID, userID).Delete(&models.Budget{}).Error; err != nil {
-		log.Error("Failed to delete budget", zap.Error(err))
+	var budget models.Budget
+	if err := db.DB.Where("id = ? AND user_id = ?", budgetID, userID).First(&budget).Error; err != nil {
+		log.Warn("Budget not found or unauthorized", zap.Error(err))
 		c.JSON(http.StatusNotFound, gin.H{"error": "Budget not found or could not be deleted"})
 		return
 	}
+
+	if err := db.DB.Delete(&budget).Error; err != nil {
+		log.Error("Failed to delete budget", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not delete budget"})
+		return
+	}
+
+	// Invalidate budget summary cache for affected months
+	invalidateBudgetCache(c, userID, budget.StartDate, budget.EndDate, log)
+
 	c.JSON(http.StatusOK, gin.H{"message": "Budget deleted successfully"})
 }
 
@@ -255,3 +280,33 @@ func RecalculateAllBudgets(logger *zap.Logger) error {
 	logger.Info("Successfully recalculated all budget remaining amounts")
 	return nil
 }
+
+// invalidateBudgetCache invalidates budget summary cache for all months between start and end dates
+func invalidateBudgetCache(c *gin.Context, userID uint, startDate, endDate time.Time, log *zap.Logger) {
+	var cacheService *cache.CacheService
+	if cs, exists := c.Get("cacheService"); exists && cs != nil {
+		cacheService = cs.(*cache.CacheService)
+	}
+
+	if cacheService == nil || !cacheService.IsEnabled() {
+		return
+	}
+
+	ctx := context.Background()
+	
+	// Generate cache keys for all months between start and end dates
+	current := time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, time.Local)
+	end := time.Date(endDate.Year(), endDate.Month(), 1, 0, 0, 0, 0, time.Local)
+
+	for !current.After(end) {
+		monthKey := current.Format("2006-01")
+		cacheKey := cache.GenerateKey("budget:summary", userID, monthKey)
+		if err := cacheService.Delete(ctx, cacheKey); err != nil {
+			log.Warn("Failed to invalidate budget cache", zap.String("key", cacheKey), zap.Error(err))
+		} else {
+			log.Debug("Invalidated budget summary cache", zap.String("month", monthKey), zap.Uint("userID", userID))
+		}
+		current = current.AddDate(0, 1, 0)
+	}
+}
+
