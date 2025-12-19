@@ -23,8 +23,8 @@ func InitDB(cfg *config.Config, zapLogger *zap.Logger) error {
 		Logger: logger.New(
 			nil, // io writer
 			logger.Config{
-				SlowThreshold:             time.Second,   // Only log queries slower than 1 second
-				LogLevel:                  logger.Silent, // Disable SQL logging
+				SlowThreshold:             time.Second, // Only log queries slower than 1 second
+				LogLevel:                  logger.Info, // Enable SQL logging to debug
 				IgnoreRecordNotFoundError: true,
 				Colorful:                  false,
 			},

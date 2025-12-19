@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/gin-contrib/cors"
@@ -12,6 +13,8 @@ import (
 	"github.com/RedShawn258/FinTrack/backend/internal/config"
 	"github.com/RedShawn258/FinTrack/backend/internal/db"
 	"github.com/RedShawn258/FinTrack/backend/internal/handlers"
+	"github.com/RedShawn258/FinTrack/backend/internal/outbox"
+	"github.com/RedShawn258/FinTrack/backend/internal/reconciliation"
 	"github.com/RedShawn258/FinTrack/backend/internal/repositories"
 	"github.com/RedShawn258/FinTrack/backend/internal/routes"
 	"github.com/RedShawn258/FinTrack/backend/internal/services"
@@ -119,6 +122,28 @@ func main() {
 
 	// Define routes
 	routes.SetupRoutes(r, logger, cfg.JWTSecret, cacheService)
+
+	// Start outbox dispatcher if enabled
+	var dispatcher *outbox.Dispatcher
+	if cfg.OutboxEnabled {
+		dispatcher = outbox.NewDispatcher(cfg, logger)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		go dispatcher.Start(ctx)
+		logger.Info("Outbox dispatcher started")
+	}
+
+	// Start reconciliation checker if enabled
+	var reconciliationChecker *reconciliation.Checker
+	if cfg.ReconciliationEnabled {
+		reconciliationChecker = reconciliation.NewChecker(logger, cfg.ReconciliationInterval)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		go reconciliationChecker.Start(ctx)
+		logger.Info("Reconciliation checker started",
+			zap.Duration("interval", cfg.ReconciliationInterval),
+		)
+	}
 
 	// Run the server
 	addr := ":" + cfg.ServerPort
