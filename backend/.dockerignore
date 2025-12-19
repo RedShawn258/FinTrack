@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README*
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test files
+*_test.go
+*_test/
+test.sh
+run_all_tests.sh
+test_new_features.sh
+
+# Build artifacts
+server
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace
+go.work
+
+# Development
+.DS_Store
+coverage.txt
+coverage.html
+
+# Uploads (local files)
+uploads/

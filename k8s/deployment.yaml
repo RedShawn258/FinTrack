@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fintrack-backend
+  labels:
+    app: fintrack-backend
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fintrack-backend
+  template:
+    metadata:
+      labels:
+        app: fintrack-backend
+        tier: backend
+    spec:
+      containers:
+        - name: backend
+          image: gcr.io/true-node-429318-i8/fintrack-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "8080"
+            - name: ENV
+              value: "production"
+            - name: DATABASE_URL
+              value: "mysql://fintrack_user:fintrack_password123@mysql:3306/fintrack"
+            - name: REDIS_URL
+              value: "redis://redis:6379/0"
+            - name: JWT_SECRET
+              value: "demo-jwt-secret-change-in-production"
+            - name: CORS_ORIGINS
+              value: "https://your-frontend-domain.com"
+            - name: CACHE_ENABLED
+              value: "true"
+            - name: DISABLE_UPLOADS
+              value: "true"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
