@@ -503,6 +503,16 @@ func UpdateProfileHandler(c *gin.Context) {
 // ProfileImageUploadHandler handles profile image uploads
 func ProfileImageUploadHandler(c *gin.Context) {
 	logger := c.MustGet("logger").(*zap.Logger)
+
+	// Check if uploads are disabled (e.g., in Kubernetes deployments without object storage)
+	if os.Getenv("DISABLE_UPLOADS") == "true" {
+		logger.Warn("Profile image upload attempted but uploads are disabled")
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error": "Uploads disabled in this deployment; use object storage in production",
+		})
+		return
+	}
+
 	userID := c.MustGet("userID").(uint)
 
 	// Get the file from form data
